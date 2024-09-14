@@ -2,6 +2,7 @@ import 'package:code_alpha_campus_event/colors.dart';
 import 'package:code_alpha_campus_event/pages/events.dart';
 import 'package:code_alpha_campus_event/pages/home.dart';
 import 'package:code_alpha_campus_event/pages/notification.dart';
+import 'package:code_alpha_campus_event/pages/profile.dart';
 import 'package:flutter/material.dart';
 
 class BottomNav extends StatefulWidget {
@@ -19,7 +20,7 @@ class _BottomNavState extends State<BottomNav> {
     const Home(),
     const Events(),
     const Notify(),
-    const Center(child: Text("Me"),),
+    const Profile(),
   ];
 
   @override
@@ -27,7 +28,8 @@ class _BottomNavState extends State<BottomNav> {
     return Scaffold(
       body: _pages[_currentIndex],  // Display the selected page
       bottomNavigationBar: BottomNavigationBar(
-        currentIndex: _currentIndex,  // Track selected index
+        currentIndex: _currentIndex, 
+        elevation: 0, // Track selected index
         backgroundColor: AppColors.background,
         type: BottomNavigationBarType.fixed,
         selectedItemColor: AppColors.font2,  // Color for selected item icon
@@ -65,14 +67,14 @@ class _BottomNavState extends State<BottomNav> {
           BottomNavigationBarItem(
             icon: Icon(
               Icons.notifications,
-              color: _currentIndex == 3 ? const Color(0xff1877F2) : AppColors.font2,
+              color: _currentIndex == 2 ? const Color(0xff1877F2) : AppColors.font2,
             ),
             label: "Notifications",
           ),
           BottomNavigationBarItem(
             icon: Icon(
               Icons.person,
-              color: _currentIndex == 4 ? const Color(0xff1877F2) : AppColors.font2,
+              color: _currentIndex == 3 ? const Color(0xff1877F2) : AppColors.font2,
             ),
             label: "Me",
           ),

@@ -103,7 +103,7 @@ Widget BuildNot({required String title}) {
                    ElevatedButton(onPressed: (){},style: ElevatedButton.styleFrom(
                     backgroundColor: AppColors.pressedButton,
                        padding:const EdgeInsets.symmetric(horizontal: 12,vertical: 2.0)
-                   ), child:const  Text("Delete,",style: TextStyle(color: AppColors.font2),),),
+                   ), child:const  Text("Delete",style: TextStyle(color: AppColors.font2),),),
                 ],
               )
             ],

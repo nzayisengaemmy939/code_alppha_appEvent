@@ -2,6 +2,7 @@ import 'package:code_alpha_campus_event/colors.dart';
 import 'package:code_alpha_campus_event/components/app_bar.dart';
 import 'package:code_alpha_campus_event/components/app_event.dart';
 import 'package:code_alpha_campus_event/components/event_button.dart';
+import 'package:code_alpha_campus_event/config/app_route.dart';
 import 'package:flutter/material.dart';
 
 class Home extends StatefulWidget {
@@ -67,7 +68,7 @@ class _HomeState extends State<Home> {
       // Update search query as user types
     });
   },
-  style: TextStyle(color: AppColors.font2), // Custom text color
+  style: const TextStyle(color: AppColors.font2), // Custom text color
 )
 
     );
@@ -83,14 +84,23 @@ class _HomeState extends State<Home> {
         ),
         PopupMenuButton<String>(
           color: AppColors.background, // Customize popup menu background color
-          onSelected: (String value) {
-            // Handle the selected menu item
-            print("Selected: $value");
-          },
+         onSelected: (value) {
+              // Handle menu selection
+              switch (value) {
+                case 'update':
+                  Navigator.pushNamed(context, AppRoute.campusUpdate);
+                  break;
+                case 'link':
+                  Navigator.pushNamed(context, AppRoute.link);
+                  break;
+                case 'not':
+                  // Handle special notification action
+                  break;
+              }},
           itemBuilder: (context) {
             return [
               const PopupMenuItem<String>(
-                value: 'Profile',
+                value: 'update',
                 child: Row(
                   children: [
                     Icon(Icons.update, color: AppColors.font2),
@@ -100,7 +110,7 @@ class _HomeState extends State<Home> {
                 ),
               ),
               const PopupMenuItem<String>(
-                value: 'Settings',
+                value: 'link',
                 child: Row(
                   children: [
                     Icon(Icons.link, color: AppColors.font2),
@@ -110,7 +120,7 @@ class _HomeState extends State<Home> {
                 ),
               ),
               const PopupMenuItem<String>(
-                value: 'Logout',
+                value: 'not',
                 child: Row(
                   children: [
                     Icon(Icons.notifications, color: AppColors.font2),
@@ -120,7 +130,9 @@ class _HomeState extends State<Home> {
                 ),
               ),
             ];
+            
           },
+          
           icon: const Icon(
             Icons.more_vert,
             color: AppColors.font2, // Customize the icon color
