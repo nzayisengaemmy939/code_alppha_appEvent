@@ -3,8 +3,9 @@ import 'package:code_alpha_campus_event/colors.dart';
 
 class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
   final List<Widget> actions;
+  final String name;
 
-  const CustomAppBar({super.key, required this.actions});
+  const CustomAppBar({super.key, required this.actions, required this.name,});
 
   @override
   Widget build(BuildContext context) {
@@ -29,9 +30,9 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
           child: Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              const Text(
-                "Events",
-                style: TextStyle(
+               Text(
+                name,
+                style: const TextStyle(
                   fontSize: 20.0, // Custom text size
                   fontWeight: FontWeight.bold, // Make the text bold
                   color: AppColors.font2, // Use a custom color for the title text
@@ -43,6 +44,7 @@ class CustomAppBar extends StatelessWidget implements PreferredSizeWidget {
             ],
           ),
         ),
+        
       ),
     );
   }

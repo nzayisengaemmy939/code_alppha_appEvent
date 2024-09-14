@@ -1,5 +1,7 @@
 import 'package:code_alpha_campus_event/colors.dart';
+import 'package:code_alpha_campus_event/pages/events.dart';
 import 'package:code_alpha_campus_event/pages/home.dart';
+import 'package:code_alpha_campus_event/pages/notification.dart';
 import 'package:flutter/material.dart';
 
 class BottomNav extends StatefulWidget {
@@ -15,9 +17,8 @@ class _BottomNavState extends State<BottomNav> {
   // Pages for each BottomNav item
   final List<Widget> _pages = [
     const Home(),
-    const Center(child: Text("Events"),),
-    const Center(child: Text("Calendar"),),
-    const Center(child: Text("Notifications"),),
+    const Events(),
+    const Notify(),
     const Center(child: Text("Me"),),
   ];
 
@@ -46,21 +47,21 @@ class _BottomNavState extends State<BottomNav> {
             ),
             label: "Events",
           ),
-          BottomNavigationBarItem(
-            icon: Container(
-              padding: const EdgeInsets.all(2.0),
-              decoration: BoxDecoration(
-                border: Border.all(color: AppColors.font1, width: 1.0),  // Border color
-                borderRadius: BorderRadius.circular(4.0),  // Rounded corners
-              ),
-              child: Icon(
-                Icons.calendar_month_outlined,
-                color: _currentIndex == 2 ? const Color(0xff1877F2) : AppColors.font2,
-                size: 16,
-              ),
-            ),
-            label: "Calendar",
-          ),
+          // BottomNavigationBarItem(
+          //   icon: Container(
+          //     padding: const EdgeInsets.all(2.0),
+          //     decoration: BoxDecoration(
+          //       border: Border.all(color: AppColors.font1, width: 1.0),  // Border color
+          //       borderRadius: BorderRadius.circular(4.0),  // Rounded corners
+          //     ),
+          //     child: Icon(
+          //       Icons.calendar_month_outlined,
+          //       color: _currentIndex == 2 ? const Color(0xff1877F2) : AppColors.font2,
+          //       size: 16,
+          //     ),
+          //   ),
+          //   label: "Calendar",
+          // ),
           BottomNavigationBarItem(
             icon: Icon(
               Icons.notifications,

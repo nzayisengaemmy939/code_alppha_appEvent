@@ -126,7 +126,7 @@ class _HomeState extends State<Home> {
             color: AppColors.font2, // Customize the icon color
           ), // Customize the icon
         ),
-      ],
+      ],name: "Incoming Events",
     );
   }
 
@@ -136,7 +136,7 @@ class _HomeState extends State<Home> {
       appBar: _isSearching ? _buildSearchAppBar() : _buildDefaultAppBar(),
       body: SingleChildScrollView(
         child: Padding(
-          padding: const EdgeInsets.only(left: 16.0, right: 36.0),
+          padding: const EdgeInsets.only(left: 16.0,right: 24.0),
           child: Column(
             children: [
               const SizedBox(height: 10),
