@@ -1,6 +1,7 @@
 import 'package:code_alpha_campus_event/app_styles.dart';
 import 'package:code_alpha_campus_event/colors.dart';
 import 'package:code_alpha_campus_event/components/event_button.dart';
+import 'package:code_alpha_campus_event/config/app_route.dart';
 import 'package:flutter/material.dart';
 
 class Profile extends StatefulWidget {
@@ -123,7 +124,9 @@ class _ProfileState extends State<Profile> {
             const SizedBox(height: 10),
             Center(
               child: ElevatedButton(
-                onPressed: () {},
+                onPressed: () {
+                  Navigator.pushNamed(context, AppRoute.profile);
+                },
                 style: ElevatedButton.styleFrom(
                     elevation: 0,
                     backgroundColor: AppColors.button,

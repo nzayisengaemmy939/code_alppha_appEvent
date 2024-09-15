@@ -4,8 +4,10 @@ import 'package:code_alpha_campus_event/components/bottom_nav.dart';
 import 'package:code_alpha_campus_event/pages/add_event.dart';
 import 'package:code_alpha_campus_event/pages/campus_update.dart';
 import 'package:code_alpha_campus_event/pages/edit.dart';
+import 'package:code_alpha_campus_event/pages/edit_profile.dart';
 import 'package:code_alpha_campus_event/pages/home.dart';
 import 'package:code_alpha_campus_event/pages/link.dart';
+import 'package:code_alpha_campus_event/pages/login.dart';
 import 'package:code_alpha_campus_event/pages/single.dart';
 import 'package:flutter/material.dart';
 
@@ -17,6 +19,8 @@ class AppRoute {
   static const String link = '/link';
   static const String edit = '/edit';
    static const String event = '/event';
+   static const String profile = '/profile';
+   static const login  = '/login';
 
 
   static final Map<String, WidgetBuilder> routes = {
@@ -26,7 +30,9 @@ class AppRoute {
     campusUpdate:(context)=>const CampusUpdate(),
     link:(context)=>const AllLinks(),
     edit:(context)=>const Edit(),
-    event:(context)=>const AddEvent()
+    event:(context)=>const AddEvent(),
+    profile:(context)=>const EditProfile(),
+     login:(context)=>const Login()
 
   };
 }
