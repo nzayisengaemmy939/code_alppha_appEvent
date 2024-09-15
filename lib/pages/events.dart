@@ -1,6 +1,7 @@
 import 'package:code_alpha_campus_event/colors.dart';
 import 'package:code_alpha_campus_event/components/app_bar.dart';
 import 'package:code_alpha_campus_event/components/event_button.dart';
+import 'package:code_alpha_campus_event/config/app_route.dart';
 import 'package:flutter/material.dart';
 
 class Events extends StatefulWidget {
@@ -12,28 +13,80 @@ class Events extends StatefulWidget {
 
 class _EventsState extends State<Events> {
   String _selectedButton = "All";
+  bool isSearching=false;
   void _handleButtonPress(String buttonText) {
     setState(() {
       _selectedButton = buttonText; // Update selected button
     });
   }
+  void starSearch(){
+    setState((){
+isSearching= true;
+    });
+  }
+   void stopSearch(){
+    setState((){
+isSearching= false;
+    });
+  }
+   PreferredSizeWidget buildSearchAppBar() {
+    return AppBar(
+      leading: IconButton(
+        icon: const Icon(Icons.arrow_back,color: AppColors.font2,),
+        onPressed: stopSearch, // Go back to the default app bar
+      ),
+      backgroundColor: AppColors.background,
+      elevation: 0,
+      title: TextField(
+  autofocus: true, // Automatically focus on the search bar
+  decoration: const InputDecoration(
+    hintText: 'Search...',
+    hintStyle: TextStyle(color: AppColors.font2), // Custom hint text color
+    border: InputBorder.none, // Remove default border
+    enabledBorder: OutlineInputBorder(
+      borderSide: BorderSide(width: 1.0, color: AppColors.button), // White border
+      borderRadius: BorderRadius.all(Radius.circular(50)), // Rounded corners
+    ),
+    focusedBorder: OutlineInputBorder(
+      borderSide: BorderSide(width: 1.0, color: AppColors.button), // White border on focus
+      borderRadius: BorderRadius.all(Radius.circular(50)), // Rounded corners
+    ),
+    filled: true,
+    fillColor: AppColors.button, // Background color of the TextField
+  ),
+  onChanged: (query) {
+    setState(() {
+      // Update search query as user types
+    });
+  },
+  style: const TextStyle(color: AppColors.font2), // Custom text color
+)
 
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: CustomAppBar(
-        actions: [
-          IconButton(
-            icon:
-                const Icon(Icons.search, color: AppColors.font2), // Search icon
-            onPressed: () {
-              // Action for search icon
-            },
-          ),
-          PopupMenuButton<String>(
+    );
+  }
+PreferredSizeWidget defoultAppBar(){
+  return CustomAppBar(
+    actions: [
+       IconButton(
+          icon: const Icon(Icons.search),
+          onPressed: starSearch, // Switch to the search app bar
+        ),
+        PopupMenuButton<String>(
             color: AppColors.background,
             elevation: 0,
+          onSelected: (value) {
+              // Handle menu selection
+              switch (value) {
+                case 'edit':
+                  Navigator.pushNamed(context, AppRoute.edit);
+                  break;
+                case 'link':
+                  // Navigator.pushNamed(context, AppRoute.link);
+                  break;
+               
+              }},
             itemBuilder: (context) {
+              
               return [
                 const PopupMenuItem<String>(
                   value: 'edit',
@@ -55,37 +108,18 @@ class _EventsState extends State<Events> {
                     ],
                   ),
                 ),
-                const PopupMenuItem<String>(
-                  value: 'special_notification',
-                  child: Row(
-                    children: [
-                      Icon(Icons.info, color: AppColors.font2),
-                      SizedBox(width: 10),
-                      Text("Special Notification",
-                          style: TextStyle(color: AppColors.font2)),
-                    ],
-                  ),
-                ),
-              ];
-            },
-            onSelected: (value) {
-              // Handle menu selection
-              switch (value) {
-                case 'edit':
-                  // Handle edit action
-                  break;
-                case 'delete':
-                  // Handle delete action
-                  break;
-                case 'special_notification':
-                  // Handle special notification action
-                  break;
-              }
-            },
-          ),
-        ],
-        name: "Events",
-      ),
+              ] ;
+            } 
+        )
+
+    ], name: 'Events',
+
+  );
+}
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      appBar: isSearching?buildSearchAppBar():defoultAppBar(),
       body: SingleChildScrollView(
         child: Padding(
           padding: const EdgeInsets.symmetric(
@@ -158,7 +192,7 @@ class _EventsState extends State<Events> {
         elevation: 0,
         backgroundColor: AppColors.pressedButton,
         onPressed: () {
-          // Action for floating button
+          Navigator.pushNamed(context, AppRoute.event);
         },
         child: const Icon(
           Icons.calendar_today,

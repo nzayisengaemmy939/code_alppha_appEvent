@@ -93,9 +93,7 @@ class _HomeState extends State<Home> {
                 case 'link':
                   Navigator.pushNamed(context, AppRoute.link);
                   break;
-                case 'not':
-                  // Handle special notification action
-                  break;
+               
               }},
           itemBuilder: (context) {
             return [
@@ -119,16 +117,7 @@ class _HomeState extends State<Home> {
                   ],
                 ),
               ),
-              const PopupMenuItem<String>(
-                value: 'not',
-                child: Row(
-                  children: [
-                    Icon(Icons.notifications, color: AppColors.font2),
-                    SizedBox(width: 8),
-                    Text('Special Notification', style: TextStyle(color: AppColors.font1)),
-                  ],
-                ),
-              ),
+            
             ];
             
           },

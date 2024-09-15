@@ -6,29 +6,149 @@ class AllLinks extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return  Scaffold(
+    return Scaffold(
       appBar: AppBar(
         backgroundColor: AppColors.background,
         foregroundColor: AppColors.font2,
         title: const Text("Quick links"),
       ),
       body: const SingleChildScrollView(
-        
         child: Padding(
           padding: EdgeInsets.symmetric(horizontal: 24.0),
-          
           child: Column(
             children: [
-            SizedBox(height: 10,),
-            Row(
-            crossAxisAlignment: CrossAxisAlignment.start,
+              SizedBox(
+                height: 10,
+              ),
+              Row(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Icon(
+                    Icons.link,
+                    color: AppColors.font2,
+                    size: 30,
+                  ),
+                  SizedBox(
+                    width: 15,
+                  ),
+                  Expanded(
+                      child: Text(
+                    "https://youtu.be/YeqOyBqLSEg?si=_AaukZxgMsVsviXO",
+                    style: TextStyle(
+                      color: AppColors.pressedButton,
+                    ),
+                  ))
+                ],
+              ),
+               SizedBox(height: 10,),
 
-              children: [
-                Icon(Icons.link,color: AppColors.font2,size: 30,),
-                Expanded(child: Text("https://youtu.be/YeqOyBqLSEg?si=_AaukZxgMsVsviXO",style: TextStyle(color: AppColors.font2),))
-              ],
-            )
+              Row(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Icon(
+                    Icons.link,
+                    color: AppColors.font2,
+                    size: 30,
+                  ),
+                  SizedBox(
+                    width: 15,
+                  ),
+                  Expanded(
+                      child: Text(
+                    "https://youtu.be/YeqOyBqLSEg?si=_AaukZxgMsVsviXO",
+                    style: TextStyle(
+                      color: AppColors.pressedButton,
+                    ),
+                  ))
+                ],
+              ),
+               SizedBox(height: 10,),
 
+              Row(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Icon(
+                    Icons.link,
+                    color: AppColors.font2,
+                    size: 30,
+                  ),
+                  SizedBox(
+                    width: 15,
+                  ),
+                  Expanded(
+                      child: Text(
+                    "https://youtu.be/YeqOyBqLSEg?si=_AaukZxgMsVsviXO",
+                    style: TextStyle(
+                      color: AppColors.pressedButton,
+                    ),
+                  ))
+                ],
+              ),
+               SizedBox(height: 10,),
+
+              Row(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Icon(
+                    Icons.link,
+                    color: AppColors.font2,
+                    size: 30,
+                  ),
+                  SizedBox(
+                    width: 15,
+                  ),
+                  Expanded(
+                      child: Text(
+                    "https://youtu.be/YeqOyBqLSEg?si=_AaukZxgMsVsviXO",
+                    style: TextStyle(
+                      color: AppColors.pressedButton,
+                    ),
+                  ))
+                ],
+              ),
+               SizedBox(height: 10,),
+
+              Row(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Icon(
+                    Icons.link,
+                    color: AppColors.font2,
+                    size: 30,
+                  ),
+                  SizedBox(
+                    width: 15,
+                  ),
+                  Expanded(
+                      child: Text(
+                    "https://youtu.be/YeqOyBqLSEg?si=_AaukZxgMsVsviXO",
+                    style: TextStyle(
+                      color: AppColors.pressedButton,
+                    ),
+                  ))
+                ],
+              ),
+               SizedBox(height: 10,),
+              Row(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Icon(
+                    Icons.link,
+                    color: AppColors.font2,
+                    size: 30,
+                  ),
+                  SizedBox(
+                    width: 15,
+                  ),
+                  Expanded(
+                      child: Text(
+                    "https://youtu.be/YeqOyBqLSEg?si=_AaukZxgMsVsviXO",
+                    style: TextStyle(
+                      color: AppColors.pressedButton,
+                    ),
+                  ))
+                ],
+              ),
             ],
           ),
         ),

@@ -13,9 +13,10 @@ class BottomNav extends StatefulWidget {
 }
 
 class _BottomNavState extends State<BottomNav> {
-  int _currentIndex = 0;  // Default index is 0, so HomePage is the default page
+  int _currentIndex = 0;
+  // PageController to control the PageView
+  final PageController _pageController = PageController();
 
-  // Pages for each BottomNav item
   final List<Widget> _pages = [
     const Home(),
     const Events(),
@@ -23,67 +24,128 @@ class _BottomNavState extends State<BottomNav> {
     const Profile(),
   ];
 
+  // Handle the BottomNavigationBar tap
+  void _onItemTapped(int index) {
+    setState(() {
+      _currentIndex = index;
+    });
+    // Jump to the selected page in the PageView
+    _pageController.jumpToPage(index);
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: _pages[_currentIndex],  // Display the selected page
+      // PageView to enable left/right swiping
+      body: PageView(
+        controller: _pageController,
+        onPageChanged: (index) {
+          setState(() {
+            _currentIndex = index; // Sync BottomNav with PageView swiping
+          });
+        },
+        children: _pages,
+      ),
       bottomNavigationBar: BottomNavigationBar(
-        currentIndex: _currentIndex, 
-        elevation: 0, // Track selected index
+        currentIndex: _currentIndex,
+        elevation: 0,
         backgroundColor: AppColors.background,
         type: BottomNavigationBarType.fixed,
-        selectedItemColor: AppColors.font2,  // Color for selected item icon
+        selectedItemColor: AppColors.font2,
         unselectedItemColor: AppColors.font2,
         items: <BottomNavigationBarItem>[
           BottomNavigationBarItem(
-            icon: Icon(
-              Icons.home, 
-              color: _currentIndex == 0 ? const Color(0xff1877F2) : AppColors.font2
+            icon: Stack(
+              children: [
+                Icon(
+                  Icons.home,
+                  color: _currentIndex == 0
+                      ? const Color(0xff1877F2)
+                      : AppColors.font2,
+                  size: 30.0,
+                ),
+                Positioned(
+                  right: 0,
+                  top: -1,
+                  child: Container(
+                    width: 17.0,
+                    height: 17.0,
+                    decoration: const BoxDecoration(
+                      color: Color.fromARGB(255, 241, 28, 28),
+                      shape: BoxShape.circle,
+                    ),
+                    child: const Center(
+                      child: Text(
+                        "5",
+                        style: TextStyle(
+                          color: AppColors.font2,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                    ),
+                  ),
+                )
+              ],
             ),
             label: "Home",
           ),
           BottomNavigationBarItem(
             icon: Icon(
-              Icons.event, 
-              color: _currentIndex == 1 ? const Color(0xff1877F2) : AppColors.font2
+              Icons.event,
+              color: _currentIndex == 1
+                  ? const Color(0xff1877F2)
+                  : AppColors.font2,
+              size: 25.0,
             ),
             label: "Events",
           ),
-          // BottomNavigationBarItem(
-          //   icon: Container(
-          //     padding: const EdgeInsets.all(2.0),
-          //     decoration: BoxDecoration(
-          //       border: Border.all(color: AppColors.font1, width: 1.0),  // Border color
-          //       borderRadius: BorderRadius.circular(4.0),  // Rounded corners
-          //     ),
-          //     child: Icon(
-          //       Icons.calendar_month_outlined,
-          //       color: _currentIndex == 2 ? const Color(0xff1877F2) : AppColors.font2,
-          //       size: 16,
-          //     ),
-          //   ),
-          //   label: "Calendar",
-          // ),
           BottomNavigationBarItem(
-            icon: Icon(
-              Icons.notifications,
-              color: _currentIndex == 2 ? const Color(0xff1877F2) : AppColors.font2,
+            icon: Stack(
+              children: [
+                Icon(
+                  Icons.notifications,
+                  size: 30.0,
+                  color: _currentIndex == 2
+                      ? const Color(0xff1877F2)
+                      : AppColors.font2,
+                ),
+                Positioned(
+                  right: 0,
+                  top: -1,
+                  child: Container(
+                    width: 17.0,
+                    height: 17.0,
+                    decoration: const BoxDecoration(
+                      color: Color.fromARGB(255, 241, 28, 28),
+                      shape: BoxShape.circle,
+                    ),
+                    child: const Center(
+                      child: Text(
+                        "5",
+                        style: TextStyle(
+                          color: AppColors.font2,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                    ),
+                  ),
+                )
+              ],
             ),
             label: "Notifications",
           ),
           BottomNavigationBarItem(
             icon: Icon(
               Icons.person,
-              color: _currentIndex == 3 ? const Color(0xff1877F2) : AppColors.font2,
+              color: _currentIndex == 3
+                  ? const Color(0xff1877F2)
+                  : AppColors.font2,
+              size: 25.0,
             ),
             label: "Me",
           ),
         ],
-        onTap: (index) {
-          setState(() {
-            _currentIndex = index;  // Update the selected index
-          });
-        },
+        onTap: _onItemTapped, // Handle BottomNav item tap
       ),
     );
   }
