@@ -51,15 +51,32 @@ class _ProfileState extends State<Profile> {
                   style: TextStyle(fontSize: AppStyles.fontsize3)),
               PopupMenuButton(
                 color: AppColors.background,
-            elevation: 0,
-            
+                elevation: 0,
                 itemBuilder: (context) {
-                  
                   return [
-                    const PopupMenuItem(child: Text("Change Mode",style: TextStyle(color: AppColors.font2),)),
-                    const PopupMenuItem(child: Text("Edit Profile",style: TextStyle(color: AppColors.font2))),
-                    const PopupMenuItem(child: Text("Logout",style: TextStyle(color: AppColors.font2)))
+                    const PopupMenuItem(
+                        child: Text("Change Mode",
+                            style: TextStyle(color: AppColors.font2))),
+                    const PopupMenuItem(
+                      value: "edit_prof",
+                      child: Text("Edit Profile",
+                          style: TextStyle(color: AppColors.font2)),
+                    ),
+                    const PopupMenuItem(
+                        child: Text("Logout",
+                            style: TextStyle(color: AppColors.font2))),
                   ];
+                },
+                onSelected: (value) {
+                  // Handle menu selection
+                  switch (value) {
+                    case 'edit_prof':
+                      Navigator.pushNamed(context, AppRoute.profile);
+                      break;
+                    case 'link':
+                      // Navigator.pushNamed(context, AppRoute.link);
+                      break;
+                  }
                 },
               )
             ],
@@ -81,8 +98,7 @@ class _ProfileState extends State<Profile> {
                       shape: BoxShape.circle,
                       image: DecorationImage(
                         image: AssetImage("assets/images/emmy.jpg"),
-                        fit: BoxFit
-                            .cover, // Make sure the image covers the circle
+                        fit: BoxFit.cover, // Make sure the image covers the circle
                       ),
                     ),
                   ),
@@ -91,7 +107,7 @@ class _ProfileState extends State<Profile> {
                       bottom: 0,
                       child: Icon(
                         Icons.edit,
-                        color: AppColors.font2,
+                        color: Color(0xFF1A73E9), // Icon color
                       ))
                 ],
               ),
@@ -100,10 +116,8 @@ class _ProfileState extends State<Profile> {
             const Center(
               child: SizedBox(
                 width: 200,
-                // height: 100,
                 child: Row(
-                  mainAxisAlignment:
-                      MainAxisAlignment.center, // Center the Row horizontally
+                  mainAxisAlignment: MainAxisAlignment.center, // Center the Row horizontally
                   children: [
                     Text(
                       "@Emma Keen",
@@ -114,7 +128,7 @@ class _ProfileState extends State<Profile> {
                     SizedBox(width: 10),
                     Icon(
                       Icons.edit,
-                      color: AppColors.font2,
+                      color: Color(0xFF1A73E9), // Icon color
                       size: 20.0,
                     ),
                   ],
@@ -202,7 +216,7 @@ class _ProfileState extends State<Profile> {
                 )
               ],
             ),
-            SizedBox(height: 10),
+            const SizedBox(height: 10),
             Row(
               children: [
                 EventButton(
@@ -236,72 +250,90 @@ class _ProfileState extends State<Profile> {
                 ),
               ],
             ),
-             const SizedBox(
-                height: 10,
-                ),
-             Wrap(
+            const SizedBox(
+              height: 10,
+            ),
+            Wrap(
               spacing: 8.0, // Add space between the children horizontally
               runSpacing: 4.0, // Add space between the rows vertically
-              
               children: [
-             Container(
-              padding: const EdgeInsets.all(10),
-              
-              decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(10),
-                color: AppColors.button,
-              ),
-              child: const Text("Career ",style: TextStyle(color: AppColors.font1),),
-             ),
-               Container(
-              padding: const EdgeInsets.all(10),
-              
-              decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(10),
-                color: AppColors.button,
-              ),
-              child: const Text("Career ",style: TextStyle(color: AppColors.font1),),
-             ),  Container(
-              padding: const EdgeInsets.all(10),
-              
-              decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(10),
-                color: AppColors.button,
-              ),
-              child: const Text("Career ",style: TextStyle(color: AppColors.font1),),
-             ),  Container(
-              padding: const EdgeInsets.all(10),
-              
-              decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(10),
-                color: AppColors.button,
-              ),
-              child: const Text("Career ",style: TextStyle(color: AppColors.font1),),
-             ),  Container(
-              padding: const EdgeInsets.all(10),
-              
-              decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(10),
-                color: AppColors.button,
-              ),
-              child: const Text("Career ",style: TextStyle(color: AppColors.font1),),
-             ),  Container(
-              padding: const EdgeInsets.all(10),
-              
-              decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(10),
-                color: AppColors.button,
-              ),
-              child: const Text("Career ",style: TextStyle(color: AppColors.font1),),
-             ),  Container(
-              padding: const EdgeInsets.all(10),
-              
-              decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(10),
-                color: AppColors.button,
-              ),
-              child: const Text("Career ",style: TextStyle(color: AppColors.font1),),
-             ),
+                Container(
+                  padding: const EdgeInsets.all(10),
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(10),
+                    color: AppColors.button,
+                  ),
+                  child: const Text(
+                    "Career ",
+                    style: TextStyle(color: AppColors.font1),
+                  ),
+                ),
+                Container(
+                  padding: const EdgeInsets.all(10),
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(10),
+                    color: AppColors.button,
+                  ),
+                  child: const Text(
+                    "Career ",
+                    style: TextStyle(color: AppColors.font1),
+                  ),
+                ),
+                Container(
+                  padding: const EdgeInsets.all(10),
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(10),
+                    color: AppColors.button,
+                  ),
+                  child: const Text(
+                    "Career ",
+                    style: TextStyle(color: AppColors.font1),
+                  ),
+                ),
+                Container(
+                  padding: const EdgeInsets.all(10),
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(10),
+                    color: AppColors.button,
+                  ),
+                  child: const Text(
+                    "Career ",
+                    style: TextStyle(color: AppColors.font1),
+                  ),
+                ),
+                Container(
+                  padding: const EdgeInsets.all(10),
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(10),
+                    color: AppColors.button,
+                  ),
+                  child: const Text(
+                    "Career ",
+                    style: TextStyle(color: AppColors.font1),
+                  ),
+                ),
+                Container(
+                  padding: const EdgeInsets.all(10),
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(10),
+                    color: AppColors.button,
+                  ),
+                  child: const Text(
+                    "Career ",
+                    style: TextStyle(color: AppColors.font1),
+                  ),
+                ),
+                Container(
+                  padding: const EdgeInsets.all(10),
+                  decoration: BoxDecoration(
+                    borderRadius: BorderRadius.circular(10),
+                    color: AppColors.button,
+                  ),
+                  child: const Text(
+                    "Career ",
+                    style: TextStyle(color: AppColors.font1),
+                  ),
+                ),
               ],
             )
           ],

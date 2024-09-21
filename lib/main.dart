@@ -18,7 +18,7 @@ class MyApp extends StatelessWidget {
         fontFamily: "Poppins",
         scaffoldBackgroundColor: AppColors.background,
       ),
-      initialRoute: AppRoute.nav, // Set initial route
+      initialRoute: AppRoute.login, // Set initial route
       routes: AppRoute.routes, // Define home route
         // You can add more routes here
       

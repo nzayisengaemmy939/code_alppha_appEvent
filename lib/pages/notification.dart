@@ -90,23 +90,25 @@ class NotifyState extends State<Notify> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: isSearching?_buildSearchAppBar():defaultAppBar(), // Adding the AppBar here
-      body: Padding(
-        padding: const EdgeInsets.symmetric(horizontal: 24.0),
-        child: Column(
-          children: [
-            const SizedBox(height: 10),
-            BuildNot(
-              title: "To t insontent.. FAB nt. This setubarclude a popup",
-            ),
-            const SizedBox(height: 10),
-            BuildNot(
-              title: "To t insontent.. FAB nt. This setubarclude a popup",
-            ),
-            const SizedBox(height: 10),
-            BuildNot(
-              title: "To t insontent.. FAB nt. This setubarclude a popup",
-            ),
-          ],
+      body: SingleChildScrollView(
+        child: Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 24.0),
+          child: Column(
+            children: [
+              const SizedBox(height: 10),
+              BuildNot(
+                title: "To t insontent.. FAB nt. This setubarclude a popup",
+              ),
+              const SizedBox(height: 10),
+              BuildNot(
+                title: "To t insontent.. FAB nt. This setubarclude a popup",
+              ),
+              const SizedBox(height: 10),
+              BuildNot(
+                title: "To t insontent.. FAB nt. This setubarclude a popup",
+              ),
+            ],
+          ),
         ),
       ),
     );
