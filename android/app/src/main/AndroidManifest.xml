@@ -2,7 +2,9 @@
     <application
         android:label="code_alpha_campus_event"
         android:name="${applicationName}"
-        android:icon="@mipmap/ic_launcher">
+        android:icon="@mipmap/ic_launcher"
+        android:enableOnBackInvokedCallback="true"> <!-- Add this line -->
+        
         <activity
             android:name=".MainActivity"
             android:exported="true"

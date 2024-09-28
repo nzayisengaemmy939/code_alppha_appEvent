@@ -7,22 +7,38 @@ class AppEvent extends StatelessWidget {
   final String name;
   final String title;
   final String created;
-  final String image; // Change to String
+  final String image;
+  final String eventId;
+  
+
+  late final Map<String, dynamic> arguments; // Declare as late
 
   AppEvent({
-    required this.image, // Move this to the required parameters
-    Key? key, // Use Key? for optional key parameter
+    required this.image,
+    Key? key,
     required this.name,
     required this.title,
     required this.created,
-  }) : super(key: key); // Call the superclass constructor
-
+    required this.eventId,
+  }) : super(key: key) {
+    arguments = {
+      'eventId': eventId,
+      'name': name,
+      'image': image,
+    };
+  }
   @override
   Widget build(BuildContext context) {
     return GestureDetector(
       onTap: () {
-        // Navigate to the single page when the row is tapped
-        Navigator.pushNamed(context, AppRoute.single);
+        // print("e======================================ventid ${eventId}");
+
+        Navigator.pushNamed(
+          context,
+          AppRoute.single,
+          arguments: arguments,
+         
+        );
       },
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -34,72 +50,59 @@ class AppEvent extends StatelessWidget {
             decoration: BoxDecoration(
               shape: BoxShape.circle,
               image: DecorationImage(
-                image: _getImageProvider(image), // Get image provider
+                image: _getImageProvider(image),
                 fit: BoxFit.cover,
               ),
             ),
           ),
           const SizedBox(width: 15.0),
-      
-          
-          Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Row(
-                
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                
-                  Text(
-                    name,
-                    style: const TextStyle(
-                      fontSize: AppStyles.fontsize2,
-                      color: AppColors.font2,
-                      fontWeight: FontWeight.w500,
+          Expanded(
+            // Use Expanded to take up the remaining space
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Text(
+                      name,
+                      style: const TextStyle(
+                        fontSize: AppStyles.fontsize2,
+                        color: AppColors.font2,
+                        fontWeight: FontWeight.w500,
+                      ),
                     ),
-                    textAlign: TextAlign.left,
-                  ),
-            
-                  Text(
-                    created,
-                    style: const TextStyle(
-                      fontSize: AppStyles.fontsize4,
-                      color: AppColors.font1,
-                      fontWeight: FontWeight.w500,
+                    Text(
+                      created,
+                      style: const TextStyle(
+                        fontSize: AppStyles.fontsize4,
+                        color: AppColors.font1,
+                        fontWeight: FontWeight.w500,
+                      ),
                     ),
-                    textAlign: TextAlign.left,
+                  ],
+                ),
+                const SizedBox(height: 10.0),
+                Text(
+                  title,
+                  style: const TextStyle(
+                    fontSize: AppStyles.fontsize3,
+                    color: AppColors.font2,
+                    fontWeight: FontWeight.w500,
                   ),
-                ],
-              ),
-              const SizedBox(height: 10.0),
-              // Event title
-              Row(
-                children: [
-                  Text(
-                    title,
-                    style: const TextStyle(
-                      fontSize: AppStyles.fontsize3,
-                      color: AppColors.font2,
-                      fontWeight: FontWeight.w500,
-                    ),
-                    textAlign: TextAlign.left,
-                  ),
-                ],
-              ),
-            ],
+                ),
+              ],
+            ),
           ),
         ],
       ),
     );
   }
 
-  // Function to determine the ImageProvider based on the image string
   ImageProvider _getImageProvider(String imageUrl) {
     if (imageUrl.startsWith('http')) {
-      // If the URL starts with 'http', it's a network image
       return NetworkImage(imageUrl);
     } else {
-      // Otherwise, it's assumed to be an asset image
       return AssetImage(imageUrl);
     }
   }

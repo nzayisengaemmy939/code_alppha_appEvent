@@ -93,6 +93,7 @@ class _HomeState extends State<Home> {
   // Build the default app bar with a search icon and popup menu
   PreferredSizeWidget _buildDefaultAppBar() {
     return CustomAppBar(
+      
       actions: [
         IconButton(
           icon: const Icon(Icons.search),
@@ -165,6 +166,8 @@ const SizedBox(height: 10),
         builder: (context, snapshot) {
           if (snapshot.connectionState == ConnectionState.waiting) {
             return AppEvent(
+               eventId: "loading",
+
               image: "assets/images/loading.png", // Loading image
               name: "Loading...",
               title: event['title'],
@@ -172,6 +175,7 @@ const SizedBox(height: 10),
             );
           } else if (snapshot.hasError) {
             return AppEvent(
+               eventId: event['_id'],
               image: "assets/images/profile.png", // Default image on error
               name: event['name'] ?? "No Owner",
               title: event['title'],
@@ -182,6 +186,7 @@ const SizedBox(height: 10),
             String imageUrl = profile['file'] ?? "assets/images/profile.png";
 
             return AppEvent(
+              eventId: event['_id'],
               image: imageUrl,
               name: event['name'] ?? "No Owner",
               title: event['title'],
@@ -317,4 +322,5 @@ const SizedBox(height: 10),
   Future<String?> getToken() async {
     return await storage.read(key: 'token');
   }
+  
 }

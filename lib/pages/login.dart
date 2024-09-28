@@ -25,11 +25,11 @@ class _LoginState extends State<Login> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: AppColors.single,
-      appBar: AppBar(
-        backgroundColor: AppColors.background,
-        foregroundColor: AppColors.font2,
-        title: const Text("Login"),
-      ),
+      // appBar: AppBar(
+      //   backgroundColor: AppColors.background,
+      //   foregroundColor: AppColors.font2,
+      //   title: const Text("Login"),
+      // ),
       body: Center(
         child: SingleChildScrollView(
           child: Padding(
