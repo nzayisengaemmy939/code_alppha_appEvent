@@ -26,8 +26,9 @@ class NotifyState extends State<Notify> {
   List<dynamic> notify = [];
   bool isSearching = false;
   Map<String, dynamic> profileCache = {}; 
-  bool isAccept=false;
-  int accept=0;// Cache for profiles
+  bool isAccept = false;
+  int accept = 0;
+  int decline=0; // Cache for profiles
 
   void startSearch() {
     setState(() {
@@ -40,14 +41,14 @@ class NotifyState extends State<Notify> {
       isSearching = false;
     });
   }
-  Future<void> getLikes() async {
-   
+
+  Future<void> acceptEvent(String eventId) async {
     setState(() {
       isAccept = !isAccept; // Show loading indicator
     });
 
     final String lik =
-        '$baseUrl/events/accept'; // Corrected URL if necessary
+        '$baseUrl/events/accept/$eventId'; // Corrected URL if necessary
     print('like endpoint: $lik');
 
     try {
@@ -61,113 +62,176 @@ class NotifyState extends State<Notify> {
           },
         );
 
-        print('Response from get likes API: ${response.body}');
+        print('Response from accepts like API: ${response.body}');
 
         if (response.statusCode == 200) {
           final decodedResponse = json.decode(response.body);
-          print('Decoded response: $decodedResponse');
+          print('Decoded response from accepts: $decodedResponse');
 
           setState(() {
-            accept = decodedResponse['data'] ?? 0; // Update likes count
-           // Mark as liked
+            accept = decodedResponse['data'] ?? 0; 
+            decodedResponse['data']==1? _showSuccessDialog(context, 'success', "you have accepted event"):_showSuccessDialog(context, 'success', "you have declined event");
+      
+     // Update likes count
           });
         } else {
-          showErrorDialog(context, "Error", "No likes data found.");
-       
+          showErrorDialog(context, "Error", "No accepts data found.");
         }
       } else {
         showErrorDialog(context, "Error", "Token not found. Please log in.");
-      
       }
     } catch (e) {
       showErrorDialog(context, "Error", "Unexpected error: $e");
-     
     }
   }
+    Future<void> declineEvent(String eventId) async {
+    // setState(() {
+    //   isAccept = !isAccept; // Show loading indicator
+    // });
+
+    final String lik =
+        '$baseUrl/events/decline/$eventId'; // Corrected URL if necessary
+    print('like endpoint: $lik');
+
+    try {
+      String? token = await getToken();
+      if (token != null) {
+        final response = await http.post(
+          Uri.parse(lik),
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': 'Bearer $token',
+          },
+        );
+
+        print('Response from decline like API: ${response.body}');
+
+        if (response.statusCode == 200) {
+          final decodedResponse = json.decode(response.body);
+          print('Decoded response from declines: $decodedResponse');
+
+          setState(() {
+            decline = decodedResponse['data'] ?? 0; 
+            decodedResponse['data']==1? _showSuccessDialog(context, 'success', "you have delined event"):_showSuccessDialog(context, 'success', "you haven,t declined event");
+      
+     // Update likes count
+          });
+        } else {
+          showErrorDialog(context, "Error", "No declines data found.");
+        }
+      } else {
+        showErrorDialog(context, "Error", "Token not found. Please log in.");
+      }
+    } catch (e) {
+      showErrorDialog(context, "Error", "Unexpected error: $e");
+    }
+  }
+  
 
   Future<String?> getToken() async {
     return await storage.read(key: 'token');
   }
+ void _showSuccessDialog(BuildContext context, String title, String message) {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: Text(title),
+          content: Text(
+            message,
+            style: const TextStyle(color: Colors.green),
+          ),
+          actions: [
+            TextButton(
+              onPressed: () {
+                Navigator.of(context).pop();
+                
+              },
+              child: const Text("OK"),
+            ),
+          ],
+        );
+      },
+    );
+  }
 
   Future<void> getEvent() async {
-  try {
-    String? token = await getToken();
-    if (token != null) {
-      final response = await http.get(
-        Uri.parse('$baseUrl/notifications/notification'),
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': 'Bearer $token',
-        },
-      );
+    try {
+      String? token = await getToken();
+      if (token != null) {
+        final response = await http.get(
+          Uri.parse('$baseUrl/notifications/notification'),
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': 'Bearer $token',
+          },
+        );
 
-      print("Response status code: ${response.statusCode}");
-      print("Response body: ${response.body}");
+        print("Response status code: ${response.statusCode}");
+        print("Response body: ${response.body}");
 
-      if (response.statusCode == 200) {
-        final decodedResponse = json.decode(response.body);
+        if (response.statusCode == 200) {
+          final decodedResponse = json.decode(response.body);
 
-        if (decodedResponse != null && decodedResponse.containsKey('notifications')) {
-          setState(() {
-            notify = decodedResponse['notifications'] ?? [];
-          });
+          if (decodedResponse != null && decodedResponse.containsKey('notifications')) {
+            setState(() {
+              notify = decodedResponse['notifications'] ?? [];
+            });
+          } else {
+            print("No notifications found in response.");
+            setState(() {
+              notify = [];
+            });
+          }
         } else {
-          print("No notifications found in response.");
-          setState(() {
-            notify = [];
-          });
+          showErrorDialog(context, "Error", "No notifications found.");
         }
       } else {
-        showErrorDialog(context, "Error", "No notifications found.");
+        showErrorDialog(context, "Error", "Token not found. Please log in.");
       }
-    } else {
-      showErrorDialog(context, "Error", "Token not found. Please log in.");
+    } catch (e) {
+      print("Unexpected error: $e");
+      showErrorDialog(context, "Error", "Unexpected error: $e");
     }
-  } catch (e) {
-    print("Unexpected error: $e");
-    showErrorDialog(context, "Error", "Unexpected error: $e");
-  }
-}
-
-
- Future<Map<String, dynamic>> getProfile(String? owner) async {
-  if (owner == null) {
-    // Return a default profile if owner is null
-    return {
-      'file': 'assets/images/profile.png',
-      'name': 'No Owner'
-    };
   }
 
-  if (profileCache.containsKey(owner)) {
-    return profileCache[owner]; // Return cached profile if available
-  }
+  Future<Map<String, dynamic>> getProfile(String? owner) async {
+    if (owner == null) {
+      // Return a default profile if owner is null
+      return {
+        'file': 'assets/images/profile.png',
+        'name': 'No Owner'
+      };
+    }
 
-  try {
-    String? token = await getToken();
-    if (token != null) {
-      final response = await http.get(
-        Uri.parse('$baseUrl/profiles/get_profile/$owner'),
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': 'Bearer $token',
-        },
-      );
-      if (response.statusCode == 200) {
-        final profileData = json.decode(response.body)['data'];
-        profileCache[owner] = profileData; // Cache the profile
-        return profileData;
+    if (profileCache.containsKey(owner)) {
+      return profileCache[owner]; // Return cached profile if available
+    }
+
+    try {
+      String? token = await getToken();
+      if (token != null) {
+        final response = await http.get(
+          Uri.parse('$baseUrl/profiles/get_profile/$owner'),
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': 'Bearer $token',
+          },
+        );
+        if (response.statusCode == 200) {
+          final profileData = json.decode(response.body)['data'];
+          profileCache[owner] = profileData; // Cache the profile
+          return profileData;
+        } else {
+          throw Exception("Profile not found.");
+        }
       } else {
-        throw Exception("Profile not found.");
+        throw Exception("Token not found.");
       }
-    } else {
-      throw Exception("Token not found.");
+    } catch (e) {
+      throw Exception("Unexpected error: $e");
     }
-  } catch (e) {
-    throw Exception("Unexpected error: $e");
   }
-}
-
 
   void showErrorDialog(BuildContext context, String title, String message) {
     showDialog(
@@ -270,41 +334,39 @@ class NotifyState extends State<Notify> {
             children: [
               const SizedBox(height: 10),
               ...notify.map((notify) {
-                // DateTime createdAt = DateTime.parse(notify['createdAt']);
-                // String formattedTime = DateFormat.jm().format(createdAt);
-
                 return Column(
                   children: [
                     FutureBuilder<Map<String, dynamic>>(
                       future: getProfile(notify['owner']),
                       builder: (context, snapshot) {
-                        if (snapshot.connectionState ==
-                            ConnectionState.waiting) {
+                        if (snapshot.connectionState == ConnectionState.waiting) {
                           return BuildNot(
                             image: "assets/images/loading.png", // Loading image
                             title: 'Loading...',
+                            eventId: notify['eventId'],
+                            acceptEvent: acceptEvent,
+                            declineEvent: declineEvent // Pass the method here
+                             // Pass the method here
                           );
                         } else if (snapshot.hasError) {
                           return BuildNot(
-                            image:
-                                "assets/images/profile.png", // Default image on error
-                            title: notify['title'] ?? 'Error...',
+                            image: "assets/images/profile.png", // Default image on error
+                            title: notify['firstName'] ?? 'No name...',
+                            eventId: notify['eventId'],
+                            acceptEvent: acceptEvent,
+                            declineEvent: declineEvent // Pass the method here
+
+                             // Pass the method here
                           );
                         } else {
                           var profile = snapshot.data!;
-                          String imageUrl =
-                              profile['file'] ?? "assets/images/profile.png";
-                          // ImageProvider profileImage;
-
-                          // if (imageUrl.startsWith('https')) {
-                          //   profileImage = NetworkImage(imageUrl);
-                          // } else {
-                          //   profileImage = AssetImage(imageUrl);
-                          // }
-
+                          String imageUrl = profile['file'] ?? "assets/images/profile.png";
                           return BuildNot(
                             image: imageUrl,
-                            title: notify['title'] ?? "No title available",
+                            title: "${notify['name'] ?? 'Someone'} has added a new event: ${notify['title'] ?? 'Untitled'}",
+                            eventId: notify['eventId'],
+                            acceptEvent: acceptEvent,
+                            declineEvent: declineEvent // Pass the method here
                           );
                         }
                       },
@@ -321,14 +383,21 @@ class NotifyState extends State<Notify> {
   }
 }
 
-Widget BuildNot({required String title, required String image}) {
-  // ImageProvider imageProvider;
+Widget BuildNot({
+  required String title,
+  required String image,
+  String? eventId,
+  required Function(String) acceptEvent,
+  required Function(String) declineEvent, // Accept the method as a parameter
+}) {
+  ImageProvider imageProvider;
 
-  // if (image.startsWith('http')) {
-  //   imageProvider = NetworkImage(image);
-  // } else {
-  //   imageProvider = AssetImage(image);
-  // }
+  // Check if the image is a network URL or an asset
+  if (image.startsWith('http')) {
+    imageProvider = NetworkImage(image);
+  } else {
+    imageProvider = AssetImage(image); // Use AssetImage for local assets
+  }
 
   return Row(
     crossAxisAlignment: CrossAxisAlignment.start,
@@ -339,7 +408,7 @@ Widget BuildNot({required String title, required String image}) {
         decoration: BoxDecoration(
           shape: BoxShape.circle,
           image: DecorationImage(
-            image:NetworkImage(image),
+            image: imageProvider, // Use the correct ImageProvider
             fit: BoxFit.cover,
           ),
         ),
@@ -365,7 +434,12 @@ Widget BuildNot({required String title, required String image}) {
               Row(
                 children: [
                   ElevatedButton(
-                    onPressed: () {},
+                    onPressed: eventId != null
+                        ? () {
+                            acceptEvent(eventId!);
+                             // Call the passed method
+                          }
+                        : null, // Disable button if eventId is null
                     style: ElevatedButton.styleFrom(
                       backgroundColor: AppColors.pressedButton,
                       padding: const EdgeInsets.symmetric(
@@ -378,14 +452,17 @@ Widget BuildNot({required String title, required String image}) {
                   ),
                   const SizedBox(width: 10),
                   ElevatedButton(
-                    onPressed: () {},
+                    onPressed: () {
+                      declineEvent(eventId!);
+                      // Handle delete logic here, if needed
+                    },
                     style: ElevatedButton.styleFrom(
                       backgroundColor: AppColors.pressedButton,
                       padding: const EdgeInsets.symmetric(
                           horizontal: 12, vertical: 2.0),
                     ),
                     child: const Text(
-                      "Delete",
+                      "Decline",
                       style: TextStyle(color: AppColors.font2),
                     ),
                   ),
@@ -397,5 +474,4 @@ Widget BuildNot({required String title, required String image}) {
       ),
     ],
   );
-  
 }

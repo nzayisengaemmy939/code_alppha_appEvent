@@ -1,8 +1,16 @@
+import 'dart:convert';
+
 import 'package:code_alpha_campus_event/app_styles.dart';
+import 'package:code_alpha_campus_event/bankend.dart';
 import 'package:code_alpha_campus_event/colors.dart';
 import 'package:code_alpha_campus_event/components/event_button.dart';
 import 'package:code_alpha_campus_event/config/app_route.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_secure_storage/flutter_secure_storage.dart';
+import 'package:jwt_decoder/jwt_decoder.dart';
+import 'package:http/http.dart' as http;
+
+var baseUrl = Bankend.link;
 
 class Profile extends StatefulWidget {
   const Profile({super.key});
@@ -12,10 +20,51 @@ class Profile extends StatefulWidget {
 }
 
 class _ProfileState extends State<Profile> {
+  @override
+
+  void initState() {
+    super.initState();
+    getProfile();
+    getEvent();
+    // _filteredEvents;
+    doGet(); // Load profile data on initialization
+  }
+
+  Map<String, dynamic> data = {};
+   List<dynamic>_filteredEvents=[];
+  FlutterSecureStorage storage = FlutterSecureStorage();
   String _selectedButton = "All";
   void _handleButtonPress(String buttonText) {
     setState(() {
-      _selectedButton = buttonText; // Update selected button
+      _selectedButton = buttonText;
+        _filterEvents(); // Update selected button
+    });
+  }
+
+  List<dynamic> events = [];
+
+  Map<String, dynamic> profile = {};
+  void _filterEvents() {
+    setState(() {
+      if (_selectedButton == "All") {
+        // Show all events if "All" is selected
+        _filteredEvents = events;
+      }
+      if (_selectedButton == "Academic") {
+        // Show all events if "All" is selected
+        _filteredEvents =
+            events.where((event) => event['category'] == 'academic').toList();
+      }
+      if (_selectedButton == "Social") {
+        // Show all events if "All" is selected
+        _filteredEvents =
+            events.where((event) => event['category'] == 'social').toList();
+      }
+      if (_selectedButton == "Sport") {
+        // Show all events if "All" is selected
+        _filteredEvents =
+            events.where((event) => event['category'] == 'sport').toList();
+      }
     });
   }
 
@@ -48,8 +97,10 @@ class _ProfileState extends State<Profile> {
                 style: TextStyle(fontSize: AppStyles.fontsize3),
               ),
               const SizedBox(width: 15),
-              const Text("Brw Etsienne",
-                  style: TextStyle(fontSize: AppStyles.fontsize3)),
+              Text(
+                data['firstName'] ?? "No user",
+                style: const TextStyle(fontSize: AppStyles.fontsize3),
+              ),
               PopupMenuButton(
                 color: AppColors.background,
                 elevation: 0,
@@ -68,11 +119,14 @@ class _ProfileState extends State<Profile> {
                             style: TextStyle(color: AppColors.font2))),
                   ];
                 },
-                onSelected: (value) {
+                onSelected: (value) async {
                   // Handle menu selection
                   switch (value) {
                     case 'edit_prof':
-                      Navigator.pushNamed(context, AppRoute.profile);
+                      Navigator.pushNamed(
+                        context,
+                        AppRoute.profile,
+                      );
                       break;
                     case 'link':
                       // Navigator.pushNamed(context, AppRoute.link);
@@ -95,11 +149,15 @@ class _ProfileState extends State<Profile> {
                   Container(
                     width: 90.0, // Set width of the image container
                     height: 90.0,
-                    decoration: const BoxDecoration(
+                    decoration: BoxDecoration(
                       shape: BoxShape.circle,
                       image: DecorationImage(
-                        image: AssetImage("assets/images/emmy.jpg"),
-                        fit: BoxFit.cover, // Make sure the image covers the circle
+                        image: profile['file'] != null
+                            ? NetworkImage(profile['file'])
+                            : AssetImage("assets/images/profile.png"),
+
+                        fit: BoxFit
+                            .cover, // Make sure the image covers the circle
                       ),
                     ),
                   ),
@@ -114,20 +172,34 @@ class _ProfileState extends State<Profile> {
               ),
             ),
             const SizedBox(height: 10),
-            const Center(
+            Center(
               child: SizedBox(
                 width: 200,
                 child: Row(
-                  mainAxisAlignment: MainAxisAlignment.center, // Center the Row horizontally
+                  mainAxisAlignment:
+                      MainAxisAlignment.center, // Center the Row horizontally
                   children: [
-                    Text(
-                      "@Emma Keen",
-                      style: TextStyle(
-                          color: AppColors.font2,
-                          fontSize: AppStyles.fontsize2),
-                    ),
-                    SizedBox(width: 10),
-                    Icon(
+                    FutureBuilder<String?>(
+                        future: getUserName(),
+                        builder: (context, snapshot) {
+                          if (snapshot.connectionState ==
+                              ConnectionState.waiting) {
+                            return const CircularProgressIndicator();
+                          } else if (snapshot.hasError) {
+                            return const Text('Error loading user');
+                          } else if (!snapshot.hasData) {
+                            return const Text('No user'); // Display if no data
+                          } else {
+                            return Text(
+                              snapshot.data!,
+                              style: const TextStyle(
+                                  color: AppColors.font2,
+                                  fontSize: AppStyles.fontsize2),
+                            );
+                          }
+                        }),
+                    const SizedBox(width: 10),
+                    const Icon(
                       Icons.edit,
                       color: Color(0xFF1A73E9), // Icon color
                       size: 20.0,
@@ -152,14 +224,14 @@ class _ProfileState extends State<Profile> {
               ),
             ),
             const SizedBox(height: 10),
-            const Row(
+            Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 Column(
                   children: [
                     Text(
-                      "1",
-                      style: TextStyle(
+                      events.length.toString(),
+                      style: const TextStyle(
                           fontSize: AppStyles.fontsize2,
                           color: AppColors.font2),
                     ),
@@ -170,51 +242,6 @@ class _ProfileState extends State<Profile> {
                             color: AppColors.font2)),
                   ],
                 ),
-                Column(
-                  children: [
-                    Text(
-                      "86",
-                      style: TextStyle(
-                          fontSize: AppStyles.fontsize2,
-                          color: AppColors.font2),
-                    ),
-                    SizedBox(height: 10),
-                    Text("Received",
-                        style: TextStyle(
-                            fontSize: AppStyles.fontsize3,
-                            color: AppColors.font2)),
-                  ],
-                ),
-                Column(
-                  children: [
-                    Text(
-                      "76",
-                      style: TextStyle(
-                          fontSize: AppStyles.fontsize2,
-                          color: AppColors.font2),
-                    ),
-                    SizedBox(height: 10),
-                    Text("Canceled",
-                        style: TextStyle(
-                            fontSize: AppStyles.fontsize3,
-                            color: AppColors.font2)),
-                  ],
-                ),
-                Column(
-                  children: [
-                    Text(
-                      "66",
-                      style: TextStyle(
-                          fontSize: AppStyles.fontsize2,
-                          color: AppColors.font2),
-                    ),
-                    SizedBox(height: 10),
-                    Text("Attend",
-                        style: TextStyle(
-                            fontSize: AppStyles.fontsize3,
-                            color: AppColors.font2)),
-                  ],
-                )
               ],
             ),
             const SizedBox(height: 10),
@@ -256,90 +283,235 @@ class _ProfileState extends State<Profile> {
             ),
             Wrap(
               spacing: 8.0, // Add space between the children horizontally
-              runSpacing: 4.0, // Add space between the rows vertically
+              runSpacing: 12.0, // Add space between the rows vertically
               children: [
-                Container(
-                  padding: const EdgeInsets.all(10),
-                  decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(10),
-                    color: AppColors.button,
-                  ),
-                  child: const Text(
-                    "Career ",
-                    style: TextStyle(color: AppColors.font1),
-                  ),
+                if (_filteredEvents.isEmpty)
+                const Text(
+                  "No events found for this category",
+                  style: TextStyle(color: Colors.red, fontSize: 18),
                 ),
-                Container(
-                  padding: const EdgeInsets.all(10),
-                  decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(10),
-                    color: AppColors.button,
-                  ),
-                  child: const Text(
-                    "Career ",
-                    style: TextStyle(color: AppColors.font1),
-                  ),
-                ),
-                Container(
-                  padding: const EdgeInsets.all(10),
-                  decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(10),
-                    color: AppColors.button,
-                  ),
-                  child: const Text(
-                    "Career ",
-                    style: TextStyle(color: AppColors.font1),
-                  ),
-                ),
-                Container(
-                  padding: const EdgeInsets.all(10),
-                  decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(10),
-                    color: AppColors.button,
-                  ),
-                  child: const Text(
-                    "Career ",
-                    style: TextStyle(color: AppColors.font1),
-                  ),
-                ),
-                Container(
-                  padding: const EdgeInsets.all(10),
-                  decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(10),
-                    color: AppColors.button,
-                  ),
-                  child: const Text(
-                    "Career ",
-                    style: TextStyle(color: AppColors.font1),
-                  ),
-                ),
-                Container(
-                  padding: const EdgeInsets.all(10),
-                  decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(10),
-                    color: AppColors.button,
-                  ),
-                  child: const Text(
-                    "Career ",
-                    style: TextStyle(color: AppColors.font1),
-                  ),
-                ),
-                Container(
-                  padding: const EdgeInsets.all(10),
-                  decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(10),
-                    color: AppColors.button,
-                  ),
-                  child: const Text(
-                    "Career ",
-                    style: TextStyle(color: AppColors.font1),
-                  ),
-                ),
+              const SizedBox(height: 10),
+                // Use the spread operator to add each event's container directly to the children list
+                ..._filteredEvents.map((event) {
+                  return Container(
+                    width: 170,
+                    height: 180,
+                    padding: const EdgeInsets.all(
+                        10), // Add padding around the container
+                    decoration: BoxDecoration(
+                      borderRadius:
+                          BorderRadius.circular(10), // Rounded corners
+                      color: AppColors
+                          .button, // Background color for the container
+                      // // Optional: add shadow effect for depth
+                      // boxShadow: [
+                      //   BoxShadow(
+                      //     color: Colors.grey.withOpacity(0.2), // Shadow color
+                      //     spreadRadius: 2,
+                      //     blurRadius: 5,
+                      //     offset: Offset(0, 3), // Shadow position
+                      //   ),
+                      // ],
+                    ),
+                    child: Column(
+                      crossAxisAlignment:
+                          CrossAxisAlignment.start, // Align text to the start
+                      children: [
+                        Text(
+                          event['title'] ?? "No title", // Handle null title
+                          style: TextStyle(
+                            color: AppColors.font1,
+                            fontSize:
+                                18, // Increased font size for better readability
+                            fontWeight: FontWeight.bold, // Bold font for title
+                          ),
+                        ),
+                        const SizedBox(
+                            height:
+                                8), // Spacing between title and first detail
+                        Text(
+                          "Attended with: ${event['attendes']?.length ?? 0}", // Handle null attended
+                          style:
+                              TextStyle(color: AppColors.font1, fontSize: 16),
+                        ),
+                        const SizedBox(height: 4), // Small spacing
+                        Text(
+                          "Accepted with: ${event['accept']?.length ?? 0}", // Handle null accepted
+                          style:
+                              TextStyle(color: AppColors.font1, fontSize: 16),
+                        ),
+                        const SizedBox(height: 4), // Small spacing
+                        Text(
+                          "Declined with: ${event['decline']?.length ?? 0}", // Handle null declined
+                          style:
+                              TextStyle(color: AppColors.font1, fontSize: 16),
+                        ),
+                        const SizedBox(
+                            height: 15), // Space before the next element
+                      ],
+                    ),
+                  );
+                }).toList(),
               ],
-            )
+            ),
           ],
         ),
       ),
     );
+  }
+
+  Future<String?> getUserName() async {
+    final token = await getToken();
+
+    if (token != null) {
+      Map<String, dynamic> decodedToken = JwtDecoder.decode(token);
+
+      return decodedToken['username'];
+    } else {
+      return null;
+    }
+  }
+
+  Future<String?> getuserId() async {
+    final token = await getToken();
+
+    if (token != null) {
+      Map<String, dynamic> decodedToken = JwtDecoder.decode(token);
+
+      return decodedToken['userId'];
+    } else {
+      return null;
+    }
+  }
+
+  Future<void> getProfile() async {
+    final String? userId = await getuserId();
+    try {
+      String? token = await getToken();
+      if (token != null) {
+        final response = await http.get(
+          Uri.parse('$baseUrl/profiles/get_profile/$userId'),
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': 'Bearer $token',
+          },
+        );
+        print('response body==== ${response.body}');
+        print('response statusCode==== ${response.statusCode}');
+        print('userId==== $userId');
+
+        if (response.statusCode == 200) {
+          final profileData = json.decode(response.body)['data'];
+
+          profile = profileData; // Cache the profile
+          return profileData;
+        } else {
+          throw Exception("Profile not found.");
+        }
+      } else {
+        throw Exception("Token not found.");
+      }
+    } catch (e) {
+      throw Exception("Unexpected error: $e");
+    }
+  }
+
+  Future<void> getEvent() async {
+    String? userId = await getUserId();
+
+    try {
+      String? token = await getToken();
+      if (token != null) {
+        final response = await http.get(
+          Uri.parse('$baseUrl/events/owner_event/$userId'),
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': 'Bearer $token',
+          },
+        );
+
+        if (response.statusCode == 200) {
+          final data = jsonDecode(response.body);
+          setState(() {
+            // Explicitly cast the events list to List<Map<String, dynamic>>
+            events = data['data'] ?? [];
+            _filteredEvents=events;
+            // _filteredEvents = events;
+          });
+        } else {
+          showErrorDialog(context, "Error", "Failed to load events.");
+        }
+      } else {
+        showErrorDialog(context, "Error", "Token not found. Please log in.");
+      }
+    } catch (e) {
+      showErrorDialog(context, "Error", "Unexpected error: $e");
+    }
+  }
+
+  Future<void> doGet() async {
+    final token = await getToken();
+    String? userId = await getuserId();
+
+    if (token == null || userId == null) {
+      throw Exception("Token or User ID not found.");
+    }
+
+    try {
+      final response = await http.get(
+        Uri.parse('$baseUrl/users/getuser/$userId'),
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': 'Bearer $token',
+        },
+      );
+      print('reponsegeggeggeg ${response.body}');
+      if (response.statusCode == 200) {
+        final userData = json.decode(response.body)['data'];
+        setState(() {
+          data = userData ?? {};
+        });
+      } else {
+        throw Exception("User not found. Status Code: ${response.statusCode}");
+      }
+    } catch (e) {
+      throw Exception("Unexpected error: $e");
+    }
+  }
+
+  Future<String?> getToken() async {
+    return await storage.read(key: 'token');
+  }
+
+  void showErrorDialog(BuildContext context, String title, String message) {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: Text(title),
+          content: Text(message),
+          actions: <Widget>[
+            TextButton(
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+              child: const Text('OK'),
+            ),
+          ],
+        );
+      },
+    );
+  }
+
+  Future<String?> getUserId() async {
+    final token = await getToken();
+
+    if (token != null) {
+      Map<String, dynamic> decodedToken = JwtDecoder.decode(token);
+
+      return decodedToken['userId'];
+    } else {
+      return null;
+    }
   }
 }

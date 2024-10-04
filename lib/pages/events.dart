@@ -15,29 +15,60 @@ class Events extends StatefulWidget {
   const Events({super.key});
 
   @override
-  State<Events> createState() => _EventsState();
+  State<Events> createState() => eventsState();
 }
 
-class _EventsState extends State<Events> {
+class eventsState extends State<Events> {
   String get baseUrl => Bankend.link;
+  List<dynamic> _filteredEvents = []; 
 
   @override
   void initState() {
     super.initState();
     getEvent();
   }
+  
 
   final FlutterSecureStorage storage = FlutterSecureStorage();
   List<dynamic> events = [];
+
   String _selectedButton = "All";
   bool isSearching = false;
+  String? selectedEventId; // Track selected event ID
+
   void _handleButtonPress(String buttonText) {
     setState(() {
-      _selectedButton = buttonText; // Update selected button
+      _selectedButton = buttonText;
+      _filterEvents(); // Update selected button
     });
   }
-
-  void starSearch() {
+ void _filterEvents() {
+    setState(() {
+      if (_selectedButton == "All") {
+        // Show all events if "All" is selected
+        _filteredEvents = events;
+      }
+       if (_selectedButton == "Academic") {
+        // Show all events if "All" is selected
+        _filteredEvents = events
+            .where((event) => event['category'] == 'academic')
+            .toList();
+      }
+       if (_selectedButton == "Social") {
+        // Show all events if "All" is selected
+        _filteredEvents = events
+            .where((event) => event['category'] == 'social')
+            .toList();
+      }
+        if (_selectedButton == "Sport") {
+        // Show all events if "All" is selected
+        _filteredEvents = events
+            .where((event) => event['category'] == 'sport')
+            .toList();
+      }
+    });
+  }
+  void startSearch() {
     setState(() {
       isSearching = true;
     });
@@ -51,52 +82,53 @@ class _EventsState extends State<Events> {
 
   PreferredSizeWidget buildSearchAppBar() {
     return AppBar(
-        leading: IconButton(
-          icon: const Icon(
-            Icons.arrow_back,
-            color: AppColors.font2,
-          ),
-          onPressed: stopSearch, // Go back to the default app bar
+      leading: IconButton(
+        icon: const Icon(
+          Icons.arrow_back,
+          color: AppColors.font2,
         ),
-        backgroundColor: AppColors.background,
-        elevation: 0,
-        title: TextField(
-          autofocus: true, // Automatically focus on the search bar
-          decoration: const InputDecoration(
-            hintText: 'Search...',
-            hintStyle:
-                TextStyle(color: AppColors.font2), // Custom hint text color
-            border: InputBorder.none, // Remove default border
-            enabledBorder: OutlineInputBorder(
-              borderSide: BorderSide(
-                  width: 1.0, color: AppColors.button), // White border
-              borderRadius:
-                  BorderRadius.all(Radius.circular(50)), // Rounded corners
-            ),
-            focusedBorder: OutlineInputBorder(
-              borderSide: BorderSide(
-                  width: 1.0, color: AppColors.button), // White border on focus
-              borderRadius:
-                  BorderRadius.all(Radius.circular(50)), // Rounded corners
-            ),
-            filled: true,
-            fillColor: AppColors.button, // Background color of the TextField
+        onPressed: stopSearch, // Go back to the default app bar
+      ),
+      backgroundColor: AppColors.background,
+      elevation: 0,
+      title: TextField(
+        autofocus: true, // Automatically focus on the search bar
+        decoration: const InputDecoration(
+          hintText: 'Search...',
+          hintStyle:
+              TextStyle(color: AppColors.font2), // Custom hint text color
+          border: InputBorder.none, // Remove default border
+          enabledBorder: OutlineInputBorder(
+            borderSide:
+                BorderSide(width: 1.0, color: AppColors.button), // White border
+            borderRadius:
+                BorderRadius.all(Radius.circular(50)), // Rounded corners
           ),
-          onChanged: (query) {
-            setState(() {
-              // Update search query as user types
-            });
-          },
-          style: const TextStyle(color: AppColors.font2), // Custom text color
-        ));
+          focusedBorder: OutlineInputBorder(
+            borderSide: BorderSide(
+                width: 1.0, color: AppColors.button), // White border on focus
+            borderRadius:
+                BorderRadius.all(Radius.circular(50)), // Rounded corners
+          ),
+          filled: true,
+          fillColor: AppColors.button, // Background color of the TextField
+        ),
+        onChanged: (query) {
+          setState(() {
+            // Update search query as user types
+          });
+        },
+        style: const TextStyle(color: AppColors.font2), // Custom text color
+      ),
+    );
   }
 
-  PreferredSizeWidget defoultAppBar() {
+  PreferredSizeWidget defaultAppBar() {
     return CustomAppBar(
       actions: [
         IconButton(
           icon: const Icon(Icons.search),
-          onPressed: starSearch, // Switch to the search app bar
+          onPressed: startSearch, // Switch to the search app bar
         ),
         PopupMenuButton<String>(
             color: AppColors.background,
@@ -105,7 +137,18 @@ class _EventsState extends State<Events> {
               // Handle menu selection
               switch (value) {
                 case 'edit':
-                  Navigator.pushNamed(context, AppRoute.edit);
+                  if (selectedEventId != null) {
+                    Navigator.pushNamed(
+                      context,
+                      AppRoute.edit,
+                      arguments:
+                          selectedEventId, // Passing eventId as the argument
+                    );
+                  } else {
+                    showErrorDialog(
+                        context, 'select event', 'select event first');
+                  }
+
                   break;
                 case 'link':
                   // Navigator.pushNamed(context, AppRoute.link);
@@ -124,13 +167,26 @@ class _EventsState extends State<Events> {
                     ],
                   ),
                 ),
-                const PopupMenuItem<String>(
+                PopupMenuItem<String>(
                   value: 'delete',
                   child: Row(
                     children: [
-                      Icon(Icons.delete, color: AppColors.font2),
-                      SizedBox(width: 10),
-                      Text("Delete", style: TextStyle(color: AppColors.font2)),
+                      const Icon(Icons.delete, color: AppColors.font2),
+                      const SizedBox(width: 10),
+                      TextButton(
+                        onPressed: () {
+                          if (selectedEventId != null) {
+                            showConfirmationDialog(context, () {
+                              deleteEvent(
+                                  selectedEventId!); // Only delete after confirmation
+                            });
+                          } else {
+                            showErrorDialog(
+                                context, "Error", "No event selected.");
+                          }
+                        },
+                        child: const Text("Delete"),
+                      ),
                     ],
                   ),
                 ),
@@ -141,10 +197,75 @@ class _EventsState extends State<Events> {
     );
   }
 
+  Future<void> deleteEvent(String eventId) async {
+    print("event id to delete =====$eventId");
+    try {
+      String? token = await getToken();
+      if (token != null) {
+        final response = await http.delete(
+          Uri.parse('$baseUrl/events/delete_event/$eventId'),
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': 'Bearer $token',
+          },
+        );
+
+        if (response.statusCode == 200) {
+          // If the event is deleted successfully, refresh the event list
+          setState(() {
+            events.removeWhere((event) => event['_id'] == eventId);
+            selectedEventId = null; // Clear the selected event after deletion
+          });
+          showErrorDialog(context, "Success", "Event deleted successfully ");
+        } else {
+          showErrorDialog(context, "Error", "Failed to delete the event.");
+        }
+      } else {
+        showErrorDialog(context, "Error", "Token not found. Please log in.");
+      }
+    } catch (e) {
+      showErrorDialog(context, "Error", "Unexpected error: $e");
+    }
+  }
+
+  // Function to retrieve events
+  Future<void> getEvent() async {
+    String? userId = await getUserId();
+
+    try {
+      String? token = await getToken();
+      if (token != null) {
+        final response = await http.get(
+          Uri.parse('$baseUrl/events/owner_event/$userId'),
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': 'Bearer $token',
+          },
+        );
+
+        if (response.statusCode == 200) {
+          final data = jsonDecode(response.body);
+          setState(() {
+            // Explicitly cast the events list to List<Map<String, dynamic>>
+            events = data['data'] ?? [];
+        _filteredEvents = events; 
+
+          });
+        } else {
+          showErrorDialog(context, "Error", "Failed to load events.");
+        }
+      } else {
+        showErrorDialog(context, "Error", "Token not found. Please log in.");
+      }
+    } catch (e) {
+      showErrorDialog(context, "Error", "Unexpected error: $e");
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: isSearching ? buildSearchAppBar() : defoultAppBar(),
+      appBar: isSearching ? buildSearchAppBar() : defaultAppBar(),
       body: SingleChildScrollView(
         child: Padding(
           padding: const EdgeInsets.symmetric(
@@ -189,29 +310,43 @@ class _EventsState extends State<Events> {
                 height: 10,
               ),
               Column(
-  children: events.isEmpty
-      ? [
-          const Center(child: Text("NO EVENT SUBMITTED YET....",style: TextStyle(color: AppColors.font2),)), // Single widget in a list
-        ]
-      : events.map<Widget>((event) {
-          DateTime createdAt = DateTime.parse(event['createdAt']);
-          String formattedTime = DateFormat.jm().format(createdAt);
-          String formattedDate = DateFormat.yMMMMd().format(createdAt);
+               children: [
+                
+              const SizedBox(height: 10),
+               if (_filteredEvents.isEmpty)
+                const Text(
+                  "No events found for this category",
+                  style: TextStyle(color: Colors.red, fontSize: 18),
+                ),
+              ..._filteredEvents.map((event) {
+                        DateTime createdAt = DateTime.parse(event['createdAt']);
+                        String formattedTime =
+                            DateFormat.jm().format(createdAt);
+                        String formattedDate =
+                            DateFormat.yMMMMd().format(createdAt);
 
-          return Column(
-            children: [
-              buildEventContainer(
-                title: event['title'],
-                description: event['description'],
-                dateTime: '$formattedDate - $formattedTime',
-                location: event['locationName'],
-              ),
-              const SizedBox(height: 15),
-            ],
-          );
-        }).toList(),
-)
-
+                        return Column(
+                          children: [
+                            buildEventContainer(
+                              title: event['title'],
+                              description: event['description'],
+                              dateTime: '$formattedDate - $formattedTime',
+                              location: event['locationName'],
+                              eventId: event['_id'],
+                              onSelect: () {
+                                setState(() {
+                                  selectedEventId =
+                                      event['_id']; // Set selected event ID
+                                });
+                              },
+                            ),
+                            const SizedBox(height: 15),
+                          ],
+                        );
+                      }).toList(),
+               ],
+              )
+              
             ],
           ),
         ),
@@ -236,62 +371,91 @@ class _EventsState extends State<Events> {
     required String description,
     required String dateTime,
     required String location,
+    required String? eventId,
+    required VoidCallback onSelect, // onSelect callback
   }) {
-    return Container(
-      padding: const EdgeInsets.all(16.0),
-      width: 300,
-      decoration: BoxDecoration(
-        color: const Color(0xFF2E2E2E), // Background color #2E2E2E
-        borderRadius: BorderRadius.circular(12.0), // Rounded corners
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Text(
-            title,
-            style: const TextStyle(
-              fontSize: 18.0,
-              fontWeight: FontWeight.bold,
-              color: Colors.white, // Title text color
-            ),
-          ),
-          const SizedBox(height: 8.0), // Spacing between title and description
-          Text(
-            description,
-            style: const TextStyle(
-              fontSize: 16.0,
-              color: Colors.white70, // Description text color
-            ),
-          ),
-          const SizedBox(height: 8.0),
-          Text(
-            dateTime,
-            style: const TextStyle(
-              fontSize: 14.0,
-              color: Colors.white60, // Date and time text color
-            ),
-          ),
-          const SizedBox(height: 8.0),
-          Row(
-            children: [
-              const Icon(
-                Icons.location_on,
-                color: Colors.white60, // Location icon color
-                size: 16.0, // Icon size
+    return GestureDetector(
+      onTap: onSelect, // Handle selection when tapped
+      child: Container(
+        padding: const EdgeInsets.all(16.0),
+        decoration: BoxDecoration(
+          color: selectedEventId == eventId
+              ? AppColors.single
+              : AppColors.background,
+          borderRadius: BorderRadius.circular(8.0),
+        ),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(
+              title,
+              style: const TextStyle(
+                fontSize: 18.0,
+                fontWeight: FontWeight.bold,
+                color: Colors.white, // Title text color
               ),
-              const SizedBox(
-                  width: 4.0), // Spacing between icon and location text
-              Text(
-                location,
-                style: const TextStyle(
-                  fontSize: 14.0,
-                  color: Colors.white60, // Location text color
+            ),
+            const SizedBox(
+                height: 8.0), // Spacing between title and description
+            Text(
+              description,
+              style: const TextStyle(
+                fontSize: 16.0,
+                color: Colors.white70, // Description text color
+              ),
+            ),
+            const SizedBox(height: 8.0),
+            Text(
+              dateTime,
+              style: const TextStyle(
+                fontSize: 14.0,
+                color: Colors.white60, // Date and time text color
+              ),
+            ),
+            const SizedBox(height: 8.0),
+            Row(
+              children: [
+                const Icon(
+                  Icons.location_on,
+                  color: Colors.white60, // Location icon color
+                  size: 16.0, // Icon size
                 ),
-              ),
-            ],
-          ),
-        ],
+                const SizedBox(
+                    width: 4.0), // Spacing between icon and location text
+                Text(
+                  location,
+                  style: const TextStyle(
+                    fontSize: 14.0,
+                    color: Colors.white60, // Location text color
+                  ),
+                ),
+              ],
+            ),
+            const SizedBox(height: 8.0),
+          ],
+        ),
       ),
+    );
+  }
+
+  // Helper function to show error dialog
+  void showErrorDialog(BuildContext context, String title, String message) {
+    showDialog(
+      context: context,
+      builder: (BuildContext context) {
+        return AlertDialog(
+          title: Text(title),
+          content: Text(message),
+          actions: <Widget>[
+            TextButton(
+              onPressed: () {
+                Navigator.of(context).pop();
+              },
+              child: const Text('OK'),
+            ),
+          ],
+        );
+      },
     );
   }
 
@@ -311,48 +475,26 @@ class _EventsState extends State<Events> {
     }
   }
 
-  Future<void> getEvent() async {
-    String? userId = await getUserId();
-    print('userIdpppppppppppppppppppppp $userId');
-    try {
-      String? token = await getToken();
-      if (token != null) {
-        final response = await http.get(
-          Uri.parse('$baseUrl/events/owner_event/$userId'),
-          headers: {
-            'Content-Type': 'application/json',
-            'Authorization': 'Bearer $token',
-          },
-        );
-        if (response.statusCode == 200) {
-          final decodedResponse = json.decode(response.body);
-            print("decoded responser from wowner event: $decodedResponse ");
-          setState(() {
-            events = decodedResponse['data'] ?? [];
-          });
-        } else {
-          showErrorDialog(context, "Error", "No events found.");
-        }
-      } else {
-        showErrorDialog(context, "Error", "Token not found. Please log in.");
-      }
-    } catch (e) {
-      print("erroororooro  Unexpected error: $e");
-      showErrorDialog(context, "Error", "Unexpected error: $e");
-    }
-  }
-
-  void showErrorDialog(BuildContext context, String title, String message) {
+  void showConfirmationDialog(BuildContext context, VoidCallback onConfirm) {
     showDialog(
       context: context,
-      builder: (context) {
+      barrierDismissible:
+          false, // Prevents dismissing the dialog by tapping outside
+      builder: (BuildContext context) {
         return AlertDialog(
-          title: Text(title),
-          content: Text(message),
-          actions: [
+          title: const Text('Delete Event'),
+          content: const Text('Do you want to delete this event?'),
+          actions: <Widget>[
             TextButton(
               onPressed: () {
-                Navigator.pop(context);
+                Navigator.of(context).pop();
+              },
+              child: const Text('Cancel'),
+            ),
+            TextButton(
+              onPressed: () {
+                Navigator.of(context).pop(); // Close the dialog
+                onConfirm(); // Call the confirmation action
               },
               child: const Text('OK'),
             ),

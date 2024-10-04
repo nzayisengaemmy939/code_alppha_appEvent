@@ -1,3 +1,3 @@
 class Bankend {
-  static String link="http://172.31.85.176:3000";
+  static String link="https://campus-event-backend.vercel.app/";
 }

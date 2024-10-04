@@ -21,6 +21,7 @@ class _HomeState extends State<Home> {
   String _selectedButton = "All"; // Default selected button
   bool _isSearching = false;
   List<dynamic> _events = []; // List to hold events
+  List<dynamic> _filteredEvents = []; // To hold filtered events
   Map<String, dynamic> profileCache = {}; // Cache profiles by owner
   final FlutterSecureStorage storage = FlutterSecureStorage();
 
@@ -37,6 +38,32 @@ class _HomeState extends State<Home> {
   void _handleButtonPress(String buttonText) {
     setState(() {
       _selectedButton = buttonText; // Update selected button
+      _filterEvents(); // Call the event filtering function
+    });
+  }
+
+  // Filter events by category
+  void _filterEvents() {
+    setState(() {
+      if (_selectedButton == "All") {
+        // Show all events if "All" is selected
+        _filteredEvents = _events;
+      }
+      if (_selectedButton == "Academic") {
+        // Show all events if "All" is selected
+        _filteredEvents =
+            _events.where((event) => event['category'] == 'academic').toList();
+      }
+      if (_selectedButton == "Social") {
+        // Show all events if "All" is selected
+        _filteredEvents =
+            _events.where((event) => event['category'] == 'social').toList();
+      }
+      if (_selectedButton == "Sport") {
+        // Show all events if "All" is selected
+        _filteredEvents =
+            _events.where((event) => event['category'] == 'sport').toList();
+      }
     });
   }
 
@@ -93,7 +120,6 @@ class _HomeState extends State<Home> {
   // Build the default app bar with a search icon and popup menu
   PreferredSizeWidget _buildDefaultAppBar() {
     return CustomAppBar(
-      
       actions: [
         IconButton(
           icon: const Icon(Icons.search),
@@ -120,7 +146,8 @@ class _HomeState extends State<Home> {
                   children: [
                     Icon(Icons.update, color: AppColors.font2),
                     SizedBox(width: 8),
-                    Text('Campus Update', style: TextStyle(color: AppColors.font1)),
+                    Text('Campus Update',
+                        style: TextStyle(color: AppColors.font1)),
                   ],
                 ),
               ),
@@ -130,7 +157,8 @@ class _HomeState extends State<Home> {
                   children: [
                     Icon(Icons.link, color: AppColors.font2),
                     SizedBox(width: 8),
-                    Text('Quick Links', style: TextStyle(color: AppColors.font1)),
+                    Text('Quick Links',
+                        style: TextStyle(color: AppColors.font1)),
                   ],
                 ),
               ),
@@ -153,53 +181,65 @@ class _HomeState extends State<Home> {
           child: Column(
             children: [
               const SizedBox(height: 10),
-_buildCategoryButtons(),
-const SizedBox(height: 10),
-..._events.map((event) {
-  DateTime createdAt = DateTime.parse(event['createdAt']);
-  String formattedTime = DateFormat.jm().format(createdAt);
+              _buildCategoryButtons(),
+              const SizedBox(height: 10),
+              // Handle empty event list case
+              if (_filteredEvents.isEmpty)
+                const Text(
+                  "No events found for this category",
+                  style: TextStyle(color: Colors.red, fontSize: 18),
+                ),
+              const SizedBox(height: 10),
+              ..._filteredEvents.map((event) {
+                DateTime createdAt = DateTime.parse(event['createdAt']);
+                String formattedTime = DateFormat.jm().format(createdAt);
 
-  return Column(
-    children: [
-      FutureBuilder<Map<String, dynamic>>(
-        future: getProfile(event['owner']),
-        builder: (context, snapshot) {
-          if (snapshot.connectionState == ConnectionState.waiting) {
-            return AppEvent(
-               eventId: "loading",
+                return Column(
+                  children: [
+                    FutureBuilder<Map<String, dynamic>>(
+                      future: getProfile(event['owner']),
+                      builder: (context, snapshot) {
+                        if (snapshot.connectionState ==
+                            ConnectionState.waiting) {
+                          return AppEvent(
+                            eventId: "loading",
+                            image: "assets/images/loading.png", // Loading image
+                            name: "Loading...",
+                            title: event['title'],
+                            created: formattedTime,
+                          );
+                        } else if (snapshot.hasError ||
+                            !snapshot.hasData ||
+                            snapshot.data!['file'] == null) {
+                          return AppEvent(
+                            eventId: event['_id'],
+                            image:
+                                "assets/images/profile.png", // Default image on error or missing profile
+                            name: event['name'] ?? "No Owner",
+                            title: event['title'],
+                            created: formattedTime,
+                          );
+                        } else {
+                          var profile = snapshot.data!;
+                          String imageUrl =
+                              profile['file'] ?? "assets/images/profile.png";
 
-              image: "assets/images/loading.png", // Loading image
-              name: "Loading...",
-              title: event['title'],
-              created: formattedTime,
-            );
-          } else if (snapshot.hasError) {
-            return AppEvent(
-               eventId: event['_id'],
-              image: "assets/images/profile.png", // Default image on error
-              name: event['name'] ?? "No Owner",
-              title: event['title'],
-              created: formattedTime,
-            );
-          } else {
-            var profile = snapshot.data!;
-            String imageUrl = profile['file'] ?? "assets/images/profile.png";
+                          return AppEvent(
+                            eventId: event['_id'],
+                            image: imageUrl,
+                            name: event['name'] ?? "No Owner",
+                            title: event['title'],
+                            created: formattedTime,
+                          );
+                        }
+                      },
+                    ),
 
-            return AppEvent(
-              eventId: event['_id'],
-              image: imageUrl,
-              name: event['name'] ?? "No Owner",
-              title: event['title'],
-              created: formattedTime,
-            );
-          }
-        },
-      ),
-      const SizedBox(height: 15), // Space of 20 pixels after each event
-    ],
-  );
-}).toList(),
-
+                    const SizedBox(
+                        height: 15), // Space of 20 pixels after each event
+                  ],
+                );
+              }).toList(),
             ],
           ),
         ),
@@ -239,7 +279,6 @@ const SizedBox(height: 10),
 
   Future<void> getEvents() async {
     try {
-     
       String? token = await getToken();
       if (token != null) {
         final response = await http.get(
@@ -253,6 +292,7 @@ const SizedBox(height: 10),
           final decodedResponse = json.decode(response.body);
           setState(() {
             _events = decodedResponse['data'] ?? [];
+            _filteredEvents = _events; // Initially display all events
           });
         } else {
           _showErrorDialog(context, "Error", "No events found.");
@@ -265,14 +305,17 @@ const SizedBox(height: 10),
     }
   }
 
- 
-  Future<Map<String, dynamic>> getProfile(String owner) async {
+  Future<Map<String, dynamic>> getProfile(String? owner) async {
+    if (owner == null) {
+      // Return a default profile if owner is null
+      return {'file': 'assets/images/profile.png', 'name': 'No Owner'};
+    }
+
     if (profileCache.containsKey(owner)) {
       return profileCache[owner]; // Return cached profile if available
     }
 
     try {
-      // Retrieve the token
       String? token = await getToken();
       if (token != null) {
         final response = await http.get(
@@ -282,8 +325,13 @@ const SizedBox(height: 10),
             'Authorization': 'Bearer $token',
           },
         );
+        print('response body====222 ${response.body}');
+        print('response body====111 ${response.statusCode}');
+          print('response body====111 $owner');
+
         if (response.statusCode == 200) {
           final profileData = json.decode(response.body)['data'];
+          
           profileCache[owner] = profileData; // Cache the profile
           return profileData;
         } else {
@@ -297,30 +345,23 @@ const SizedBox(height: 10),
     }
   }
 
-  // Show an error dialog
-  void _showErrorDialog(BuildContext context, String title, String message) {
-    showDialog(
-      context: context,
-      builder: (context) {
-        return AlertDialog(
-          title: Text(title),
-          content: Text(message),
-          actions: [
-            TextButton(
-              onPressed: () {
-                Navigator.pop(context);
-              },
-              child: const Text('OK'),
-            ),
-          ],
-        );
-      },
-    );
-  }
-
-  // Retrieve token from secure storage
   Future<String?> getToken() async {
     return await storage.read(key: 'token');
   }
-  
+
+  void _showErrorDialog(BuildContext context, String title, String content) {
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: Text(title),
+        content: Text(content),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.of(context).pop(),
+            child: const Text("OK"),
+          ),
+        ],
+      ),
+    );
+  }
 }
