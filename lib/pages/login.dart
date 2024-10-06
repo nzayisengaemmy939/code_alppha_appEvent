@@ -123,16 +123,16 @@ class _LoginState extends State<Login> {
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-                    TextButton(
-                      onPressed: () {},
-                      child: const Text(
-                        "Forgot Password",
-                        style: TextStyle(
-                          color: AppColors.font2,
-                          fontSize: AppStyles.fontsize2,
-                        ),
-                      ),
-                    ),
+                    // TextButton(
+                    //   onPressed: () {},
+                    //   child: const Text(
+                    //     "Forgot Password",
+                    //     style: TextStyle(
+                    //       color: AppColors.font2,
+                    //       fontSize: AppStyles.fontsize2,
+                    //     ),
+                    //   ),
+                    // ),
                     TextButton(
                       onPressed: () {
                         Navigator.pushNamed(context, AppRoute.register);
@@ -157,6 +157,10 @@ class _LoginState extends State<Login> {
 
   Future<void> doLogin(String email, String password) async {
     final FlutterSecureStorage storage = FlutterSecureStorage();
+    if(email==""&&password==""){
+  _showErrorDialog(context, 'error', 'don,t submit empty space');
+  return;
+}
     setState(() {
       isLoading = true;
     });

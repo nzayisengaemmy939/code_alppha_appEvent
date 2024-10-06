@@ -20,14 +20,13 @@ class Events extends StatefulWidget {
 
 class eventsState extends State<Events> {
   String get baseUrl => Bankend.link;
-  List<dynamic> _filteredEvents = []; 
+  List<dynamic> _filteredEvents = [];
 
   @override
   void initState() {
     super.initState();
     getEvent();
   }
-  
 
   final FlutterSecureStorage storage = FlutterSecureStorage();
   List<dynamic> events = [];
@@ -42,32 +41,31 @@ class eventsState extends State<Events> {
       _filterEvents(); // Update selected button
     });
   }
- void _filterEvents() {
+
+  void _filterEvents() {
     setState(() {
       if (_selectedButton == "All") {
         // Show all events if "All" is selected
         _filteredEvents = events;
       }
-       if (_selectedButton == "Academic") {
+      if (_selectedButton == "Academic") {
         // Show all events if "All" is selected
-        _filteredEvents = events
-            .where((event) => event['category'] == 'academic')
-            .toList();
+        _filteredEvents =
+            events.where((event) => event['category'] == 'academic').toList();
       }
-       if (_selectedButton == "Social") {
+      if (_selectedButton == "Social") {
         // Show all events if "All" is selected
-        _filteredEvents = events
-            .where((event) => event['category'] == 'social')
-            .toList();
+        _filteredEvents =
+            events.where((event) => event['category'] == 'social').toList();
       }
-        if (_selectedButton == "Sport") {
+      if (_selectedButton == "Sport") {
         // Show all events if "All" is selected
-        _filteredEvents = events
-            .where((event) => event['category'] == 'sport')
-            .toList();
+        _filteredEvents =
+            events.where((event) => event['category'] == 'sport').toList();
       }
     });
   }
+
   void startSearch() {
     setState(() {
       isSearching = true;
@@ -248,8 +246,7 @@ class eventsState extends State<Events> {
           setState(() {
             // Explicitly cast the events list to List<Map<String, dynamic>>
             events = data['data'] ?? [];
-        _filteredEvents = events; 
-
+            _filteredEvents = events;
           });
         } else {
           showErrorDialog(context, "Error", "Failed to load events.");
@@ -310,43 +307,67 @@ class eventsState extends State<Events> {
                 height: 10,
               ),
               Column(
-               children: [
-                
-              const SizedBox(height: 10),
-               if (_filteredEvents.isEmpty)
-                const Text(
-                  "No events found for this category",
-                  style: TextStyle(color: Colors.red, fontSize: 18),
-                ),
-              ..._filteredEvents.map((event) {
-                        DateTime createdAt = DateTime.parse(event['createdAt']);
-                        String formattedTime =
-                            DateFormat.jm().format(createdAt);
-                        String formattedDate =
-                            DateFormat.yMMMMd().format(createdAt);
-
-                        return Column(
-                          children: [
-                            buildEventContainer(
-                              title: event['title'],
-                              description: event['description'],
-                              dateTime: '$formattedDate - $formattedTime',
-                              location: event['locationName'],
-                              eventId: event['_id'],
-                              onSelect: () {
-                                setState(() {
-                                  selectedEventId =
-                                      event['_id']; // Set selected event ID
-                                });
-                              },
+                children: [
+                  const SizedBox(height: 10),
+                  if (_filteredEvents.isEmpty)
+                    Container(
+                      padding: EdgeInsets.all(10),
+                      decoration: BoxDecoration(
+                        color: AppColors.single,
+                        borderRadius: BorderRadius.circular(10),
+                      ),
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          const Text(
+                            "No events found for this category",
+                            style: TextStyle(
+                              color: AppColors.pressedButton,
+                              fontSize: 18,
                             ),
-                            const SizedBox(height: 15),
-                          ],
-                        );
-                      }).toList(),
-               ],
+                          ),
+                          TextButton(
+                            onPressed: () {
+                              Navigator.pushNamed(context, AppRoute.home);
+                            },
+                            child: Text(
+                              'View all events',
+                              style: TextStyle(
+                                color: const Color.fromARGB(255, 22, 106, 216),
+                                fontSize: 18,
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ..._filteredEvents.map((event) {
+                    DateTime createdAt = DateTime.parse(event['createdAt']);
+                    String formattedTime = DateFormat.jm().format(createdAt);
+                    String formattedDate =
+                        DateFormat.yMMMMd().format(createdAt);
+
+                    return Column(
+                      children: [
+                        buildEventContainer(
+                          title: event['title'],
+                          description: event['description'],
+                          dateTime: '$formattedDate - $formattedTime',
+                          location: event['locationName'],
+                          eventId: event['_id'],
+                          onSelect: () {
+                            setState(() {
+                              selectedEventId =
+                                  event['_id']; // Set selected event ID
+                            });
+                          },
+                        ),
+                        const SizedBox(height: 15),
+                      ],
+                    );
+                  }).toList(),
+                ],
               )
-              
             ],
           ),
         ),
@@ -380,8 +401,8 @@ class eventsState extends State<Events> {
         padding: const EdgeInsets.all(16.0),
         decoration: BoxDecoration(
           color: selectedEventId == eventId
-              ? AppColors.single
-              : AppColors.background,
+              ? AppColors.pressedButton
+              : AppColors.single,
           borderRadius: BorderRadius.circular(8.0),
         ),
         child: Column(

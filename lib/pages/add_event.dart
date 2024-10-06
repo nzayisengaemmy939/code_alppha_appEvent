@@ -126,9 +126,9 @@ class _AddEventState extends State<AddEvent> {
         final data = jsonDecode(response.body);
         if (data['status'] == 'success') {
           _showSuccessDialog(context, "Success", data['message']);
-          Future.delayed(const Duration(seconds: 2), () {
-            Navigator.pushReplacementNamed(context, AppRoute.event);
-          });
+           Future.delayed(const Duration(seconds: 2), () {
+        Navigator.pushReplacementNamed(context, AppRoute.ev);
+      });
         } else {
           _showErrorDialog(context, "Error", data['message']);
         }

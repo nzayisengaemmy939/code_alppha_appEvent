@@ -2,8 +2,10 @@
 import 'package:code_alpha_campus_event/components/bottom_nav.dart';
 import 'package:code_alpha_campus_event/pages/add_event.dart';
 import 'package:code_alpha_campus_event/pages/campus_update.dart';
+import 'package:code_alpha_campus_event/pages/dashboard.dart';
 import 'package:code_alpha_campus_event/pages/edit.dart';
 import 'package:code_alpha_campus_event/pages/edit_profile.dart';
+import 'package:code_alpha_campus_event/pages/events.dart';
 import 'package:code_alpha_campus_event/pages/home.dart';
 import 'package:code_alpha_campus_event/pages/link.dart';
 import 'package:code_alpha_campus_event/pages/login.dart';
@@ -22,6 +24,10 @@ class AppRoute {
    static const String profile = '/profile';
    static const login  = '/login';
     static const register  = '/register';
+    static const dash  = '/dash';
+    static const ev  = '/events';
+
+
 
 
   static final Map<String, WidgetBuilder> routes = {
@@ -34,7 +40,11 @@ class AppRoute {
     event:(context)=>const AddEvent(),
     profile:(context)=>const EditProfile(),
     login:(context)=>const Login(),
-     register:(context)=>Register()
+     register:(context)=>Register(),
+     dash:(context)=>Dashboard(),
+      ev:(context)=>const Events(),
+
+
 
   };
 }

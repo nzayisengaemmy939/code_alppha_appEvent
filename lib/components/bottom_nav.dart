@@ -1,9 +1,12 @@
 import 'package:code_alpha_campus_event/colors.dart';
+import 'package:code_alpha_campus_event/pages/dashboard.dart';
 import 'package:code_alpha_campus_event/pages/events.dart';
 import 'package:code_alpha_campus_event/pages/home.dart';
 import 'package:code_alpha_campus_event/pages/notification.dart';
 import 'package:code_alpha_campus_event/pages/profile.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_secure_storage/flutter_secure_storage.dart';
+import 'package:jwt_decoder/jwt_decoder.dart';
 
 class BottomNav extends StatefulWidget {
   const BottomNav({super.key});
@@ -13,30 +16,64 @@ class BottomNav extends StatefulWidget {
 }
 
 class _BottomNavState extends State<BottomNav> {
+  FlutterSecureStorage storage = FlutterSecureStorage();
   int _currentIndex = 0;
-  // PageController to control the PageView
-  final PageController _pageController = PageController();
+  List<Widget>? _pages; // Store the pages here
 
-  final List<Widget> _pages = [
-    const Home(),
-    const Events(),
-    const Notify(),
-    const Profile(),
-  ];
+  Future<String?> getToken() async {
+    return await storage.read(key: 'token');
+  }
+
+  Future<String?> getRole() async {
+    final token = await getToken();
+    if (token != null) {
+      Map<String, dynamic> decodedToken = JwtDecoder.decode(token);
+      return decodedToken['role'];
+    } else {
+      return null; // If no token, return null
+    }
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    // Build pages when the widget initializes
+    _initPages();
+  }
+
+  Future<void> _initPages() async {
+    String? role = await getRole();
+    print('User role: $role');
+
+    // Build the pages based on the role
+    setState(() {
+      _pages = [
+        const Home(),
+        const Events(),
+        const Notify(),
+        role == 'admin' ? const Dashboard() : const Profile(),
+      ];
+    });
+  }
 
   // Handle the BottomNavigationBar tap
+  final PageController _pageController = PageController();
+
   void _onItemTapped(int index) {
     setState(() {
-      _currentIndex = index;
+      _currentIndex = index; // Update the current index
     });
-    // Jump to the selected page in the PageView
-    _pageController.jumpToPage(index);
+    _pageController.jumpToPage(index); // Jump to the selected page
   }
 
   @override
   Widget build(BuildContext context) {
+    // Ensure that _pages is not null before building the widget
+    if (_pages == null) {
+      return const Center(child: CircularProgressIndicator()); // Loading state
+    }
+
     return Scaffold(
-      // PageView to enable left/right swiping
       body: PageView(
         controller: _pageController,
         onPageChanged: (index) {
@@ -44,7 +81,7 @@ class _BottomNavState extends State<BottomNav> {
             _currentIndex = index; // Sync BottomNav with PageView swiping
           });
         },
-        children: _pages,
+        children: _pages!, // Display the pages
       ),
       bottomNavigationBar: BottomNavigationBar(
         currentIndex: _currentIndex,
@@ -55,91 +92,33 @@ class _BottomNavState extends State<BottomNav> {
         unselectedItemColor: AppColors.font2,
         items: <BottomNavigationBarItem>[
           BottomNavigationBarItem(
-            icon: Stack(
-              children: [
-                Icon(
-                  Icons.home,
-                  color: _currentIndex == 0
-                      ? const Color(0xff1877F2)
-                      : AppColors.font2,
-                  size: 30.0,
-                ),
-                Positioned(
-                  right: 0,
-                  top: -1,
-                  child: Container(
-                    width: 17.0,
-                    height: 17.0,
-                    decoration: const BoxDecoration(
-                      color: Color.fromARGB(255, 241, 28, 28),
-                      shape: BoxShape.circle,
-                    ),
-                    child: const Center(
-                      child: Text(
-                        "5",
-                        style: TextStyle(
-                          color: AppColors.font2,
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ),
-                    ),
-                  ),
-                )
-              ],
+            icon: Icon(
+              Icons.home,
+              color: _currentIndex == 0 ? const Color(0xff1877F2) : AppColors.font2,
+              size: 30.0,
             ),
             label: "Home",
           ),
           BottomNavigationBarItem(
             icon: Icon(
               Icons.event,
-              color: _currentIndex == 1
-                  ? const Color(0xff1877F2)
-                  : AppColors.font2,
+              color: _currentIndex == 1 ? const Color(0xff1877F2) : AppColors.font2,
               size: 25.0,
             ),
             label: "Events",
           ),
           BottomNavigationBarItem(
-            icon: Stack(
-              children: [
-                Icon(
-                  Icons.notifications,
-                  size: 30.0,
-                  color: _currentIndex == 2
-                      ? const Color(0xff1877F2)
-                      : AppColors.font2,
-                ),
-                Positioned(
-                  right: 0,
-                  top: -1,
-                  child: Container(
-                    width: 17.0,
-                    height: 17.0,
-                    decoration: const BoxDecoration(
-                      color: Color.fromARGB(255, 241, 28, 28),
-                      shape: BoxShape.circle,
-                    ),
-                    child: const Center(
-                      child: Text(
-                        "5",
-                        style: TextStyle(
-                          color: AppColors.font2,
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ),
-                    ),
-                  ),
-                )
-              ],
+            icon: Icon(
+              Icons.notifications,
+              size: 30.0,
+              color: _currentIndex == 2 ? const Color(0xff1877F2) : AppColors.font2,
             ),
             label: "Notifications",
           ),
           BottomNavigationBarItem(
             icon: Icon(
               Icons.person,
-              color: _currentIndex == 3
-                  ? const Color(0xff1877F2)
-                  : AppColors.font2,
+              color: _currentIndex == 3 ? const Color(0xff1877F2) : AppColors.font2,
               size: 25.0,
             ),
             label: "Me",

@@ -178,69 +178,101 @@ class _HomeState extends State<Home> {
       body: SingleChildScrollView(
         child: Padding(
           padding: const EdgeInsets.only(left: 16.0, right: 24.0),
-          child: Column(
-            children: [
-              const SizedBox(height: 10),
-              _buildCategoryButtons(),
-              const SizedBox(height: 10),
-              // Handle empty event list case
-              if (_filteredEvents.isEmpty)
-                const Text(
-                  "No events found for this category",
-                  style: TextStyle(color: Colors.red, fontSize: 18),
-                ),
-              const SizedBox(height: 10),
-              ..._filteredEvents.map((event) {
-                DateTime createdAt = DateTime.parse(event['createdAt']);
-                String formattedTime = DateFormat.jm().format(createdAt);
-
-                return Column(
-                  children: [
-                    FutureBuilder<Map<String, dynamic>>(
-                      future: getProfile(event['owner']),
-                      builder: (context, snapshot) {
-                        if (snapshot.connectionState ==
-                            ConnectionState.waiting) {
-                          return AppEvent(
-                            eventId: "loading",
-                            image: "assets/images/loading.png", // Loading image
-                            name: "Loading...",
-                            title: event['title'],
-                            created: formattedTime,
-                          );
-                        } else if (snapshot.hasError ||
-                            !snapshot.hasData ||
-                            snapshot.data!['file'] == null) {
-                          return AppEvent(
-                            eventId: event['_id'],
-                            image:
-                                "assets/images/profile.png", // Default image on error or missing profile
-                            name: event['name'] ?? "No Owner",
-                            title: event['title'],
-                            created: formattedTime,
-                          );
-                        } else {
-                          var profile = snapshot.data!;
-                          String imageUrl =
-                              profile['file'] ?? "assets/images/profile.png";
-
-                          return AppEvent(
-                            eventId: event['_id'],
-                            image: imageUrl,
-                            name: event['name'] ?? "No Owner",
-                            title: event['title'],
-                            created: formattedTime,
-                          );
-                        }
-                      },
+          child: Align(
+            alignment: Alignment.topCenter,
+            child: Column(
+              // mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                const SizedBox(height: 10),
+                _buildCategoryButtons(),
+                const SizedBox(height: 10),
+                // Handle empty event list case
+                if (_filteredEvents.isEmpty)
+                  Container(
+                    padding: EdgeInsets.all(10),
+                    decoration: BoxDecoration(
+                      color: AppColors.single,
+                      borderRadius: BorderRadius.circular(10),
                     ),
-
-                    const SizedBox(
-                        height: 15), // Space of 20 pixels after each event
-                  ],
-                );
-              }).toList(),
-            ],
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        const Text(
+                          "No events found for this category",
+                          style: TextStyle(
+                            color: AppColors.pressedButton,
+                            fontSize: 18,
+                          ),
+                        ),
+                        TextButton(
+                          onPressed: () {
+                            Navigator.pushNamed(context, AppRoute.home);
+                          },
+                          child: Text(
+                            'View all events',
+                            style: TextStyle(
+                              color: const Color.fromARGB(255, 22, 106, 216),
+                              fontSize: 18,
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+            
+                const SizedBox(height: 10),
+                ..._filteredEvents.map((event) {
+                  DateTime createdAt = DateTime.parse(event['createdAt']);
+                  String formattedTime = DateFormat.jm().format(createdAt);
+            
+                  return Column(
+                    children: [
+                      FutureBuilder<Map<String, dynamic>>(
+                        future: getProfile(event['owner']),
+                        builder: (context, snapshot) {
+                          if (snapshot.connectionState ==
+                              ConnectionState.waiting) {
+                            return AppEvent(
+                              eventId: "loading",
+                              image: "assets/images/loading.png", // Loading image
+                              name: "Loading...",
+                              title: event['title'],
+                              created: formattedTime,
+                            );
+                          } else if (snapshot.hasError ||
+                              !snapshot.hasData ||
+                              snapshot.data!['file'] == null) {
+                            return AppEvent(
+                              eventId: event['_id'],
+                              image:
+                                  "assets/images/profile.png", // Default image on error or missing profile
+                              name: event['name'] ?? "No Owner",
+                              title: event['title'],
+                              created: formattedTime,
+                            );
+                          } else {
+                            var profile = snapshot.data!;
+                            String imageUrl =
+                                profile['file'] ?? "assets/images/profile.png";
+            
+                            return AppEvent(
+                              eventId: event['_id'],
+                              image: imageUrl,
+                              name: event['name'] ?? "No Owner",
+                              title: event['title'],
+                              created: formattedTime,
+                            );
+                          }
+                        },
+                      ),
+            
+                      const SizedBox(
+                          height: 15), // Space of 20 pixels after each event
+                    ],
+                  );
+                }).toList(),
+              ],
+            ),
           ),
         ),
       ),
@@ -327,11 +359,11 @@ class _HomeState extends State<Home> {
         );
         print('response body====222 ${response.body}');
         print('response body====111 ${response.statusCode}');
-          print('response body====111 $owner');
+        print('response body====111 $owner');
 
         if (response.statusCode == 200) {
           final profileData = json.decode(response.body)['data'];
-          
+
           profileCache[owner] = profileData; // Cache the profile
           return profileData;
         } else {
