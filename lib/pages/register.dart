@@ -235,7 +235,7 @@ Future<void> doRegister(String userName, String firstName, String lastName, Stri
       final dat = jsonDecode(response.body);
       _showErrorDialog(context, "Error", dat["message"]);
     } catch (e) {
-      _showErrorDialog(context, "Error", "Unexpected error: $e");
+      _showErrorDialog(context, "Error", "failed to access to database");
     }
   }
 }

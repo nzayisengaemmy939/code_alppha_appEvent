@@ -333,7 +333,7 @@ class _HomeState extends State<Home> {
         _showErrorDialog(context, "Error", "Token not found. Please log in.");
       }
     } catch (e) {
-      _showErrorDialog(context, "Error", "Unexpected error: $e");
+      _showErrorDialog(context, "Error", "failed to access to database");
     }
   }
 

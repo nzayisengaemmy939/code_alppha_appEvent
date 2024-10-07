@@ -222,7 +222,7 @@ class eventsState extends State<Events> {
         showErrorDialog(context, "Error", "Token not found. Please log in.");
       }
     } catch (e) {
-      showErrorDialog(context, "Error", "Unexpected error: $e");
+      showErrorDialog(context, "Error", "failed to access to database");
     }
   }
 
@@ -255,7 +255,7 @@ class eventsState extends State<Events> {
         showErrorDialog(context, "Error", "Token not found. Please log in.");
       }
     } catch (e) {
-      showErrorDialog(context, "Error", "Unexpected error: $e");
+      showErrorDialog(context, "Error", "failed to access to database");
     }
   }
 

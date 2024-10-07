@@ -893,7 +893,7 @@ Future<void> _openFilePicker(BuildContext context) async {
         return false; // Deletion failed
       }
     } catch (e) {
-      _showErrorDialog(context, "Error", "Unexpected error: $e");
+      _showErrorDialog(context, "Error", "failed to access to database");
       return false; // Deletion failed
     }
   }
@@ -981,7 +981,7 @@ Future<bool> deleteNot(String id) async {
         throw Exception("User not found. Status Code: ${response.statusCode}");
       }
     } catch (e) {
-      throw Exception("Unexpected error: $e");
+      throw Exception("failed to access to database");
     }
   }
 
@@ -1029,7 +1029,7 @@ Future<bool> deleteNot(String id) async {
         throw Exception("Token not found.");
       }
     } catch (e) {
-      throw Exception("Unexpected error: $e");
+      throw Exception("failed to access to database");
     }
   }
 Future<void> getProfiles() async {
@@ -1088,7 +1088,7 @@ Future<void> getProfiles() async {
         _showErrorDialog(context, "Error", "Token not found. Please log in.");
       }
     } catch (e) {
-      _showErrorDialog(context, "Error", "Unexpected error: $e");
+      _showErrorDialog(context, "Error", "failed to access to database");
     }
   }
 
@@ -1118,7 +1118,7 @@ Future<void> getProfiles() async {
         _showErrorDialog(context, "Error", "Token not found. Please log in.");
       }
     } catch (e) {
-      _showErrorDialog(context, "Error", "Unexpected error: $e");
+      _showErrorDialog(context, "Error", "failed to access to database");
     }
   }
 

@@ -468,7 +468,7 @@ class _ProfileState extends State<Profile> {
         throw Exception("Token not found.");
       }
     } catch (e) {
-      throw Exception("Unexpected error: $e");
+      throw Exception("failed to access to database");
     }
   }
 
@@ -501,7 +501,7 @@ class _ProfileState extends State<Profile> {
         showErrorDialog(context, "Error", "Token not found. Please log in.");
       }
     } catch (e) {
-      showErrorDialog(context, "Error", "Unexpected error: $e");
+      showErrorDialog(context, "Error", "failed to access to database");
     }
   }
 
@@ -531,7 +531,7 @@ class _ProfileState extends State<Profile> {
         throw Exception("User not found. Status Code: ${response.statusCode}");
       }
     } catch (e) {
-      throw Exception("Unexpected error: $e");
+      throw Exception("failed to access to database");
     }
   }
 

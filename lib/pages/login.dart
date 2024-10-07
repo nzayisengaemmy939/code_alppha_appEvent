@@ -203,7 +203,7 @@ class _LoginState extends State<Login> {
       setState(() {
         isLoading = false;
       });
-      _showErrorDialog(context, "Error", "Unexpected error: $e");
+      _showErrorDialog(context, "Error", " error failed to access to database");
     }
   }
 

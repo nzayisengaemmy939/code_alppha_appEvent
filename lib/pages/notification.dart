@@ -81,7 +81,7 @@ class NotifyState extends State<Notify> {
         showErrorDialog(context, "Error", "Token not found. Please log in.");
       }
     } catch (e) {
-      showErrorDialog(context, "Error", "Unexpected error: $e");
+      showErrorDialog(context, "Error", "failed to access to database");
     }
   }
     Future<void> declineEvent(String eventId) async {
@@ -123,7 +123,7 @@ class NotifyState extends State<Notify> {
         showErrorDialog(context, "Error", "Token not found. Please log in.");
       }
     } catch (e) {
-      showErrorDialog(context, "Error", "Unexpected error: $e");
+      showErrorDialog(context, "Error", "failed to access to database");
     }
   }
   
@@ -191,7 +191,7 @@ class NotifyState extends State<Notify> {
       }
     } catch (e) {
       print("Unexpected error: $e");
-      showErrorDialog(context, "Error", "Unexpected error: $e");
+      showErrorDialog(context, "Error", "failed to access to database");
     }
   }
 
