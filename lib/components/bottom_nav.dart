@@ -92,33 +92,97 @@ class _BottomNavState extends State<BottomNav> {
         unselectedItemColor: AppColors.font2,
         items: <BottomNavigationBarItem>[
           BottomNavigationBarItem(
-            icon: Icon(
+            icon: const Icon(
               Icons.home,
-              color: _currentIndex == 0 ? const Color(0xff1877F2) : AppColors.font2,
+              color: AppColors.font2, // Default color when not active
               size: 30.0,
+            ),
+            activeIcon: Stack(
+              children: [
+                const Icon(
+                  Icons.home,
+                  color: Color(0xff1877F2), // Active color when selected
+                  size: 30.0,
+                ),
+                // Circular new events indicator
+                Positioned(
+                  top: 0, // Position at the top of the icon
+                  right: 0, // Position at the right of the icon
+                  child: Container(
+                    width: 18.0, // Width of the circle
+                    height: 18.0, // Height of the circle
+                    decoration: const BoxDecoration(
+                      color: Colors
+                          .red, // Red color for the circle (new events indicator)
+                      shape: BoxShape.circle, // Circular shape
+                    ),
+                    child: const Center(child: Text('5',style: TextStyle(color: AppColors.font2),)),
+                  ),
+                ),
+              ],
             ),
             label: "Home",
           ),
           BottomNavigationBarItem(
             icon: Icon(
               Icons.event,
-              color: _currentIndex == 1 ? const Color(0xff1877F2) : AppColors.font2,
+              color: _currentIndex == 1
+                  ? const Color(0xff1877F2)
+                  : AppColors.font2,
               size: 25.0,
             ),
             label: "Events",
           ),
-          BottomNavigationBarItem(
-            icon: Icon(
+           BottomNavigationBarItem(
+            icon: const Icon(
+                Icons.notifications,
+              color: AppColors.font2, // Default color when not active
+              size: 30.0,
+            ),
+            activeIcon: Stack(
+              children: [
+                   Icon(
               Icons.notifications,
               size: 30.0,
-              color: _currentIndex == 2 ? const Color(0xff1877F2) : AppColors.font2,
+              color: _currentIndex == 2
+                  ? const Color(0xff1877F2)
+                  : AppColors.font2,
             ),
-            label: "Notifications",
+                // Circular new events indicator
+                Positioned(
+                  top: 0, // Position at the top of the icon
+                  right: 0, // Position at the right of the icon
+                  child: Container(
+                    width: 18.0, // Width of the circle
+                    height: 18.0, // Height of the circle
+                    decoration: const BoxDecoration(
+                      color: Colors
+                          .red, // Red color for the circle (new events indicator)
+                      shape: BoxShape.circle, // Circular shape
+                    ),
+                    child: const Center(child: Text('5',style: TextStyle(color: AppColors.font2),)),
+                  ),
+                ),
+              ],
+            ),
+            label: "Notification",
           ),
+          // BottomNavigationBarItem(
+          //   icon: Icon(
+          //     Icons.notifications,
+          //     size: 30.0,
+          //     color: _currentIndex == 2
+          //         ? const Color(0xff1877F2)
+          //         : AppColors.font2,
+          //   ),
+          //   label: "Notifications",
+          // ),
           BottomNavigationBarItem(
             icon: Icon(
               Icons.person,
-              color: _currentIndex == 3 ? const Color(0xff1877F2) : AppColors.font2,
+              color: _currentIndex == 3
+                  ? const Color(0xff1877F2)
+                  : AppColors.font2,
               size: 25.0,
             ),
             label: "Me",

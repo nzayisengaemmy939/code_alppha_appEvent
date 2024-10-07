@@ -26,6 +26,9 @@ class AppRoute {
     static const register  = '/register';
     static const dash  = '/dash';
     static const ev  = '/events';
+    static const bottom  = '/bottom';
+
+  
 
 
 
@@ -43,6 +46,7 @@ class AppRoute {
      register:(context)=>Register(),
      dash:(context)=>Dashboard(),
       ev:(context)=>const Events(),
+       bottom:(context)=>const BottomNav(),
 
 
 

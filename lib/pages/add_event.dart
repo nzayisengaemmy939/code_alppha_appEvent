@@ -341,7 +341,7 @@ class _AddEventState extends State<AddEvent> {
                             doRegister();
                           },
                     style: ElevatedButton.styleFrom(
-                      backgroundColor: AppColors.single,
+                      backgroundColor: AppColors.pressedButton,
                       side: const BorderSide(width: 1, color: AppColors.font1),
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(5),

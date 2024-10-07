@@ -158,7 +158,7 @@ class _EditProfileState extends State<EditProfile> {
                             doUpdate();
                           },
                     style: ElevatedButton.styleFrom(
-                      backgroundColor: AppColors.single,
+                      backgroundColor: AppColors.pressedButton,
                       side: BorderSide(
                         width: 1,
                         color: AppColors.font1,

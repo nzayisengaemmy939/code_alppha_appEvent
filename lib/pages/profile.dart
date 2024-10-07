@@ -34,7 +34,7 @@ class _ProfileState extends State<Profile> {
 
   Map<String, dynamic> data = {};
    List<dynamic>_filteredEvents=[];
-  FlutterSecureStorage storage = FlutterSecureStorage();
+  FlutterSecureStorage storage = const FlutterSecureStorage();
   String _selectedButton = "All";
   void _handleButtonPress(String buttonText) {
     setState(() {
@@ -167,7 +167,7 @@ class _ProfileState extends State<Profile> {
                         image: DecorationImage(
                           image: profile['file'] != null
                               ? NetworkImage(profile['file'])
-                              : AssetImage("assets/images/profile.png"),
+                              : const AssetImage("assets/images/profile.png"),
         
                           fit: BoxFit
                               .cover, // Make sure the image covers the circle
@@ -180,7 +180,7 @@ class _ProfileState extends State<Profile> {
                       bottom: 6,
                      child: TextButton(onPressed: (){
                      _openFilePicker1(context);
-                     }, child: Text('add profile',style: TextStyle(color: AppColors.pressedButton),)),
+                     }, child: const Text('add profile',style: TextStyle(color: AppColors.pressedButton),)),
                     ),
                     Positioned(
                       right: 0,
@@ -189,7 +189,7 @@ class _ProfileState extends State<Profile> {
                         onTap: (){
                            _openFilePicker(context);
                         },
-                        child: Icon(
+                        child: const Icon(
                           Icons.edit,
                           color: Color(0xFF1A73E9), // Icon color
                         ),
@@ -262,8 +262,8 @@ class _ProfileState extends State<Profile> {
                             fontSize: AppStyles.fontsize2,
                             color: AppColors.font2),
                       ),
-                      SizedBox(height: 10),
-                      Text("Events",
+                      const SizedBox(height: 10),
+                      const Text("Events",
                           style: TextStyle(
                               fontSize: AppStyles.fontsize2,
                               color: AppColors.font2)),
@@ -314,7 +314,7 @@ class _ProfileState extends State<Profile> {
                 children: [
                   if (_filteredEvents.isEmpty)
                    Container(
-                      padding: EdgeInsets.all(10),
+                      padding: const EdgeInsets.all(10),
                       decoration: BoxDecoration(
                         color: AppColors.single,
                         borderRadius: BorderRadius.circular(10),
@@ -333,10 +333,10 @@ class _ProfileState extends State<Profile> {
                             onPressed: () {
                               Navigator.pushNamed(context, AppRoute.home);
                             },
-                            child: Text(
+                            child: const Text(
                               'View all events',
                               style: TextStyle(
-                                color: const Color.fromARGB(255, 22, 106, 216),
+                                color: Color.fromARGB(255, 22, 106, 216),
                                 fontSize: 18,
                               ),
                             ),
@@ -374,7 +374,7 @@ class _ProfileState extends State<Profile> {
                         children: [
                           Text(
                             event['title'] ?? "No title", // Handle null title
-                            style: TextStyle(
+                            style: const TextStyle(
                               color: AppColors.font1,
                               fontSize:
                                   18, // Increased font size for better readability

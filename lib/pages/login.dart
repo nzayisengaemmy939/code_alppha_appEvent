@@ -34,8 +34,12 @@ class _LoginState extends State<Login> {
         child: SingleChildScrollView(
           child: Padding(
             padding: const EdgeInsets.symmetric(horizontal: 24.0),
+            
             child: Column(
+              
               children: [
+                Text('Login here',style: TextStyle(color: AppColors.font2,fontSize: AppStyles.fontsize2),),
+                SizedBox(height: 15,),
                 TextField(
                   onChanged: (value) {
                     email = value;
@@ -91,7 +95,7 @@ class _LoginState extends State<Login> {
                       }
                     },
                     style: ElevatedButton.styleFrom(
-                      backgroundColor: AppColors.single,
+                      backgroundColor: AppColors.pressedButton,
                       side: const BorderSide(
                         width: 1,
                         color: AppColors.font1,
@@ -123,16 +127,9 @@ class _LoginState extends State<Login> {
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-                    // TextButton(
-                    //   onPressed: () {},
-                    //   child: const Text(
-                    //     "Forgot Password",
-                    //     style: TextStyle(
-                    //       color: AppColors.font2,
-                    //       fontSize: AppStyles.fontsize2,
-                    //     ),
-                    //   ),
-                    // ),
+                   
+                    const Text("if you don,t have account",style: TextStyle(color: AppColors.font2),),
+                    SizedBox(width: 20,),
                     TextButton(
                       onPressed: () {
                         Navigator.pushNamed(context, AppRoute.register);
